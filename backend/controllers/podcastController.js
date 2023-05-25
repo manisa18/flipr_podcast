@@ -74,3 +74,33 @@ exports.deletePodcast = catchAsyncErrors(async (req, res, next) => {
     deletePodcast,
   });
 });
+
+exports.addView = catchAsyncErrors(async (req, res, next) => {
+  try {
+    viewsUpdate = await Podcast.findByIdAndUpdate(req.params.id, {
+      $inc: { views: 1 },
+    });
+    res.status(200).json({ success: true, viewsUpdate });
+  } catch (err) {
+    next(err);
+  }
+});
+
+exports.random = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const randomPodcast = await Podcast.aggregate([{ $sample: { size: 3 } }]);
+    res.status(200).json({ success: true, randomPodcast });
+  }
+  catch (err) {
+    next(err)
+  }
+});
+
+exports.trend = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const trendPodcast = await Podcast.find().sort({ view: -1 });
+    res.status(200).json({ success: true, trendPodcast });
+  } catch (err) {
+    next(err);
+  }
+})
