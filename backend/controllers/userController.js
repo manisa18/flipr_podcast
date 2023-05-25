@@ -34,23 +34,19 @@ exports.updateUser = catchAsyncErrors(async (req, res, next) => {
 
 exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
   if (req.params.id === req.user.id) {
-    try {
-      const deleteUser = await User.findByIdAndDelete(req.params.id);
+    const deleteUser = await User.findByIdAndDelete(req.params.id);
 
-      res.status(200).json({ success: true, deleteUser });
-    } catch (err) {
-      next(err);
-    }
+    res.status(200).json({ success: true, deleteUser });
   } else {
     return next(new ErrorHander("You can delete only your account!", 403));
   }
 });
 
 exports.getUser = catchAsyncErrors(async (req, res, next) => {
-    try {
-      const user = await User.findById(req.params.id);
-      res.status(200).json({ success: true, user });
-    } catch (err) {
-      next(err);
-    }
-})
+  try {
+    const user = await User.findById(req.params.id);
+    res.status(200).json({ success: true, user });
+  } catch (err) {
+    next(err);
+  }
+});

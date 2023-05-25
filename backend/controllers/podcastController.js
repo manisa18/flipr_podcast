@@ -4,7 +4,7 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ApiFeatures = require("../utils/apifeatures");
 
 exports.createPodcast = catchAsyncErrors(async (req, res, next) => {
-  const podcast = await Podcast.create(req.body);
+  const podcast = await Podcast.create({user:req.user.id,...req.body});
   res.status(201).json({
     success: true,
     podcast,
@@ -46,19 +46,26 @@ exports.updatePodcast = catchAsyncErrors(async (req, res, next) => {
   if (!podcast) {
     return next(new ErrorHander("Podcast not found", 404));
   }
-  const updatePodcast = await Podcast.findByIdAndUpdate(
-    req.params.id,
-    {
-      $set: req.body,
-    },
-    {
-      new: true,
-    }
-  );
-  res.status(200).json({
-    success: true,
-    updatePodcast,
-  });
+  if (req.user.id == podcast.user) {
+    const updatePodcast = await Podcast.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: req.body,
+      },
+      {
+        new: true,
+      }
+      
+    );
+    res.status(200).json({
+      success: true,
+      updatePodcast,
+    });
+  } else {
+    return next(new ErrorHander("You can update only your podcast!",403));
+  }
+
+  
 });
 
 exports.deletePodcast = catchAsyncErrors(async (req, res, next) => {
@@ -68,11 +75,16 @@ exports.deletePodcast = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHander("Podcast not found", 404));
   }
 
-  const deletePodcast = await Podcast.findByIdAndDelete(req.params.id);
-  res.status(200).json({
-    success: true,
-    deletePodcast,
-  });
+  if (req.user.id == podcast.user) {
+    const deletePodcast = await Podcast.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+      success: true,
+      deletePodcast,
+    });
+  } else
+  {
+    return next(new ErrorHander("You can only delete your podcast!",403));
+    }
 });
 
 exports.addView = catchAsyncErrors(async (req, res, next) => {
@@ -90,9 +102,8 @@ exports.random = catchAsyncErrors(async (req, res, next) => {
   try {
     const randomPodcast = await Podcast.aggregate([{ $sample: { size: 3 } }]);
     res.status(200).json({ success: true, randomPodcast });
-  }
-  catch (err) {
-    next(err)
+  } catch (err) {
+    next(err);
   }
 });
 
@@ -103,4 +114,4 @@ exports.trend = catchAsyncErrors(async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-})
+});
