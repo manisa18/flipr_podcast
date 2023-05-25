@@ -45,3 +45,12 @@ exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHander("You can delete only your account!", 403));
   }
 });
+
+exports.getUser = catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.params.id);
+      res.status(200).json({ success: true, user });
+    } catch (err) {
+      next(err);
+    }
+})
