@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Please Enter Your Year"],
   },
-  role: {
+  roles: {
     type: String,
     default: "user",
   },
@@ -60,6 +60,10 @@ const userSchema = new mongoose.Schema({
       type: String,
       required: true,
     },
+  },
+  fromGoogle: {
+    type: Boolean,
+    default: false,
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,

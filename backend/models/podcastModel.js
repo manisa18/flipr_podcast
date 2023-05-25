@@ -16,6 +16,10 @@ const podcastSchema = new mongoose.Schema({
     required: [true, "Please Enter Category"],
     enum: ["Music", "Sports", "News", "Education", "Technology", "Other"],
   },
+  views: {
+    type: Number,
+    default: 0,
+  },
   type: {
     type: String,
     required: [true, "Please Enter Type"],

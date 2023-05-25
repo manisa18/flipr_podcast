@@ -8,10 +8,10 @@ const errorMiddleware = require("./middleware/error");
 app.use(express.json());
 app.use(cookieParser());
 
-// const podcast = require("./routes/podcastRoute");
+const podcast = require("./routes/podcastRoute");
 const user = require("./routes/userRoute");
 
-// app.use("/api/v1", podcast);
+app.use("/api/v1/podcast", podcast);
 app.use("/api/v1", user);
 
 // Middleware;
