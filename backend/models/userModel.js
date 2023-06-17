@@ -22,45 +22,45 @@ const userSchema = new mongoose.Schema({
     minlength: [8, "Name should have more than 8 characters"],
     select: false,
   },
-  gender: {
-    type: String,
-    required: [true, "Please Enter Your Gender"],
-    enum: ["male", "female", "non-binary"],
-  },
-  month: {
-    type: Number,
-    required: [true, "Please Enter Month"],
-  },
-  date: {
-    type: Number,
-    required: [true, "Please Enter Date"],
-  },
-  year: {
-    type: Number,
-    required: [true, "Please Enter Your Year"],
-  },
-  roles: {
-    type: String,
-    default: "user",
-  },
-  likedPodcast: {
-    type: [String],
-    default: [],
-  },
-  playlist: {
-    type: [String],
-    default: [],
-  },
-  avatar: {
-    public_id: {
-      type: String,
-      required: true,
-    },
-    url: {
-      type: String,
-      required: true,
-    },
-  },
+  // gender: {
+  //   type: String,
+  //   required: [true, "Please Enter Your Gender"],
+  //   enum: ["male", "female", "non-binary"],
+  // },
+  // month: {
+  //   type: Number,
+  //   required: [true, "Please Enter Month"],
+  // },
+  // date: {
+  //   type: Number,
+  //   required: [true, "Please Enter Date"],
+  // },
+  // year: {
+  //   type: Number,
+  //   required: [true, "Please Enter Your Year"],
+  // },
+  // roles: {
+  //   type: String,
+  //   default: "user",
+  // },
+  // likedPodcast: {
+  //   type: [String],
+  //   default: [],
+  // },
+  // playlist: {
+  //   type: [String],
+  //   default: [],
+  // },
+  // avatar: {
+  //   public_id: {
+  //     type: String,
+  //     required: true,
+  //   },
+  //   url: {
+  //     type: String,
+  //     required: true,
+  //   },
+  // },
   fromGoogle: {
     type: Boolean,
     default: false,

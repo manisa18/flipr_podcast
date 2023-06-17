@@ -4,7 +4,7 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ApiFeatures = require("../utils/apifeatures");
 
 exports.createPodcast = catchAsyncErrors(async (req, res, next) => {
-  const podcast = await Podcast.create({user:req.user.id,...req.body});
+  const podcast = await Podcast.create({ user: req.user.id, ...req.body });
   res.status(201).json({
     success: true,
     podcast,
@@ -55,14 +55,14 @@ exports.updatePodcast = catchAsyncErrors(async (req, res, next) => {
       {
         new: true,
       }
-      
+
     );
     res.status(200).json({
       success: true,
       updatePodcast,
     });
   } else {
-    return next(new ErrorHander("You can update only your podcast!",403));
+    return next(new ErrorHander("You can update only your podcast!", 403));
   }
 
   
@@ -81,10 +81,9 @@ exports.deletePodcast = catchAsyncErrors(async (req, res, next) => {
       success: true,
       deletePodcast,
     });
-  } else
-  {
-    return next(new ErrorHander("You can only delete your podcast!",403));
-    }
+  } else {
+    return next(new ErrorHander("You can only delete your podcast!", 403));
+  }
 });
 
 exports.addView = catchAsyncErrors(async (req, res, next) => {
