@@ -31,11 +31,12 @@ const podcastSchema = new mongoose.Schema({
   },
   img: {
     type: String,
-    // required: true,
+    required: true,
   },
   file: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "File",
+    // type: mongoose.Schema.Types.ObjectId,
+    type: String,
+    // ref: "File",
     required: true,
   },
   user: {

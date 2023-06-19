@@ -14,7 +14,7 @@ const podcast = require("./routes/podcastRoute");
 const auth = require("./routes/authRoute");
 const user = require("./routes/userRoute");
 
-app.use("/api/v1/podcast", podcast);
+app.use("/api/podcast", podcast);
 app.use("/", auth);
 app.use("/api/v1/profile", user);
 
