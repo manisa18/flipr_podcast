@@ -39,7 +39,7 @@ const Input = styled.input`
   border: none;
   background-color: transparent;
   color: ${({ theme }) => theme.text};
-  
+  width: 100%;
 
   &:focus {
     outline: none;
