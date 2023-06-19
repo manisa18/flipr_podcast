@@ -94,18 +94,19 @@ const Navbar = () => {
         </Search>
         {auth ? (
           <div>
-            <Button onClick={handleDropdown}>
+            {/* <Button onClick={handleDropdown}> */}
               <Avatar
                 sx={{
-                  bgcolor: "#282c3c",
-                  width: 20,
-                  height: 20,
-                }}>
-                <Typography variant="subtitle1" sx={{ fontSize: 13 }}>
+                  bgcolor: "#ffff",
+                  width: 30,
+                  height: 30,
+                }}
+                onClick={handleDropdown}>
+                <Typography variant="subtitle1" sx={{color:"#282c3c", fontSize: 20 }}>
                   {JSON.parse(auth).data.user.name[0].toUpperCase()}
                 </Typography>
               </Avatar>
-            </Button>
+            {/* </Button> */}
             {dropdownOpen && (
               <Dropdown>
                 <Button onClick={handleSignOut}>Logout</Button>
