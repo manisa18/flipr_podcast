@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import Avatar from "@mui/material/Avatar";
+import Typography from "@mui/material/Typography";
 import SearchIcon from "@mui/icons-material/Search";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   position: sticky;
@@ -68,17 +69,20 @@ const Dropdown = styled.div`
   gap: 5px;
   z-index: 1;
 `;
-const Navbar = () => {
-  const [user, setUser] = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // Function to handle user sign out
-  const handleSignOut = () => {
-    setUser(null);
-  };
+const Navbar = () => {
+  const navigate = useNavigate();
+  const auth = localStorage.getItem("user");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
+  };
+
+  const handleSignOut = () => {
+    localStorage.clear();
+    setDropdownOpen(!dropdownOpen);
+    navigate("/");
   };
 
   return (
@@ -88,11 +92,19 @@ const Navbar = () => {
           <Input placeholder="Search" />
           <SearchIcon />
         </Search>
-        {user ? (
+        {auth ? (
           <div>
             <Button onClick={handleDropdown}>
-              <AccountCircleIcon />
-              {user.name}
+              <Avatar
+                sx={{
+                  bgcolor: "#282c3c",
+                  width: 20,
+                  height: 20,
+                }}>
+                <Typography variant="subtitle1" sx={{ fontSize: 13 }}>
+                  {JSON.parse(auth).data.user.name[0].toUpperCase()}
+                </Typography>
+              </Avatar>
             </Button>
             {dropdownOpen && (
               <Dropdown>
@@ -103,7 +115,7 @@ const Navbar = () => {
         ) : (
           <Link to="/signin" style={{ textDecoration: "none" }}>
             <Button>
-              <AccountCircleIcon />
+              {/* <AccountCircleIcon /> */}
               Sign In
             </Button>
           </Link>

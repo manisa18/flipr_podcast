@@ -79,6 +79,7 @@ const SignUp = () => {
       });
       if (response.status === 201) {
         window.alert("Registration Successful");
+        localStorage.setItem("user", JSON.stringify(response));
         console.log("Successful Registration");
       } else {
         window.alert("Invalid Registration");

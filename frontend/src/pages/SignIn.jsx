@@ -65,26 +65,25 @@ const SignIn = () => {
     const { name, value } = e.target;
     setUser((prevUser) => ({ ...prevUser, [name]: value }));
   };
-  const handleSignIn = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const { email, password } = user;
       const response = await axios.post("http://localhost:3000/login", {
         email,
         password,
-    });
-    if (response.status === 200) {
+      });
+      if (response.status === 200) {
         // Handle successful signin
         window.alert("Signin Successful");
-        const { name } = response.data;
-        setUser({ email: "", password: "", name });
+        localStorage.setItem("user", JSON.stringify(response));
         console.log("Successful Signin");
         navigate("/");
-    } else {
+      } else {
         // Handle unsuccessful signin
         window.alert("Invalid Credentials");
         console.log("Invalid Credentials");
-    }
+      }
     } catch (err) {
       console.log(err);
       // Handle error
@@ -109,7 +108,7 @@ const SignIn = () => {
           value={user.password}
           onChange={handleInputs}
         />
-        <Button className="signup-button" onClick={handleSignIn}>
+        <Button className="signup-button" onClick={handleSubmit}>
           Sign In
         </Button>
 
