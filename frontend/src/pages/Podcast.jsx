@@ -119,7 +119,6 @@ const Podcast = () => {
       console.error("Error fetching podcast:", error);
     }
   };
-
   useEffect(() => {
     getAllpodcast();
   }, []);

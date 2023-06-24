@@ -8,12 +8,14 @@ const Container = styled.div`
   justify-content: space-between;
   flex-wrap: wrap;
 `;
-const Home = () => {
+const Home = ({ searchResult }) => {
   const [podcast, setPodcast] = useState([]);
+
   useEffect(() => {
     getpodcast();
   }, []);
 
+  console.log(searchResult);
   const getpodcast = async () => {
     try {
       const response = await axios.get("http://localhost:8000/api/podcast");
@@ -31,11 +33,17 @@ const Home = () => {
 
   return (
     <Container>
-      {podcast.map((product) => (
-        <div key={product.id}>
-          <Card product={product} />
-        </div>
-      ))}
+      {searchResult.length > 0
+        ? searchResult.map((product) => (
+            <div key={product.id}>
+              <Card product={product} />
+            </div>
+          ))
+        : podcast.map((product) => (
+            <div key={product.id}>
+              <Card product={product} />
+            </div>
+          ))}
     </Container>
   );
 };

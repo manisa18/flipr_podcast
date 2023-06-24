@@ -4,7 +4,7 @@ import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import SearchIcon from "@mui/icons-material/Search";
 import { Link, useNavigate } from "react-router-dom";
-
+import axios from "axios";
 const Container = styled.div`
   position: sticky;
   top: 0;
@@ -70,10 +70,11 @@ const Dropdown = styled.div`
   z-index: 1;
 `;
 
-const Navbar = () => {
+const Navbar = ({ setSearchResult }) => {
   const navigate = useNavigate();
   const auth = localStorage.getItem("user");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [keywords, setKeywords] = useState("");
 
   const handleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -85,28 +86,48 @@ const Navbar = () => {
     navigate("/");
   };
 
+  const handleSearchClick = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/podcast/?keyword=${keywords}`
+      );
+      const data = response.data.podcasts;
+      setSearchResult(data);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
+  };
   return (
     <Container>
       <Wrapper>
         <Search>
-          <Input placeholder="Search" />
-          <SearchIcon />
+          <Input
+            placeholder="Search"
+            value={keywords}
+            onChange={(e) => setKeywords(e.target.value)}
+          />
+
+          <Button
+            onClick={handleSearchClick}
+            style={{ backgroundColor: "transparent", border: "none" }}>
+            <SearchIcon />
+          </Button>
         </Search>
         {auth ? (
           <div>
-            {/* <Button onClick={handleDropdown}> */}
-              <Avatar
-                sx={{
-                  bgcolor: "#ffff",
-                  width: 30,
-                  height: 30,
-                }}
-                onClick={handleDropdown}>
-                <Typography variant="subtitle1" sx={{color:"#282c3c", fontSize: 20 }}>
-                  {JSON.parse(auth).data.user.name[0].toUpperCase()}
-                </Typography>
-              </Avatar>
-            {/* </Button> */}
+            <Avatar
+              sx={{
+                bgcolor: "#ffff",
+                width: 30,
+                height: 30,
+              }}
+              onClick={handleDropdown}>
+              <Typography
+                variant="subtitle1"
+                sx={{ color: "#282c3c", fontSize: 20 }}>
+                {JSON.parse(auth).data.user.name[0].toUpperCase()}
+              </Typography>
+            </Avatar>
             {dropdownOpen && (
               <Dropdown>
                 <Button onClick={handleSignOut}>Logout</Button>
