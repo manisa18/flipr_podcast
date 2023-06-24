@@ -24,17 +24,18 @@ const Wrapper = styled.div`
 
 function App() {
   const [darkMode, setDarkMode] = useState(true);
+  const [searchResult, setSearchResult] = useState("");
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <Container>
         <BrowserRouter>
           <Menu darkMode={darkMode} setDarkMode={setDarkMode} />
           <Main>
-            <Navbar />
+            <Navbar setSearchResult={setSearchResult} />
             <Wrapper>
               <Routes>
                 <Route path="/">
-                  <Route index element={<Home />} />
+                  <Route index element={<Home searchResult={searchResult}/>} />
                   <Route path="signin" element={<SignIn />} />
                   <Route exact path="/signup" element={<SignUp />} />
                   <Route path="podcast">
