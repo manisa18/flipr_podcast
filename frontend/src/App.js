@@ -1,4 +1,3 @@
-// import logo from './logo.svg';
 import "./App.css";
 import React, { useState } from "react";
 import styled, { ThemeProvider } from "styled-components";
@@ -25,6 +24,7 @@ const Wrapper = styled.div`
 function App() {
   const [darkMode, setDarkMode] = useState(true);
   const [searchResult, setSearchResult] = useState("");
+
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <Container>
@@ -34,14 +34,13 @@ function App() {
             <Navbar setSearchResult={setSearchResult} />
             <Wrapper>
               <Routes>
-                <Route path="/">
-                  <Route index element={<Home searchResult={searchResult}/>} />
-                  <Route path="signin" element={<SignIn />} />
-                  <Route exact path="/signup" element={<SignUp />} />
-                  <Route path="podcast">
-                    <Route path=":id" element={<Podcast />} />
-                  </Route>
-                </Route>
+                <Route
+                  path="/"
+                  element={<Home searchResult={searchResult} />}
+                />
+                <Route path="signin" element={<SignIn />} />
+                <Route path="signup" element={<SignUp />} />
+                <Route path="podcast/:id" element={<Podcast />} />
               </Routes>
             </Wrapper>
           </Main>

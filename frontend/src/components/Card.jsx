@@ -49,12 +49,11 @@ const Info = styled.div`
   color: ${({ theme }) => theme.textSoft};
 `;
 
-const Card = ({type, product }) => {
+const Card = ({ type, product }) => {
   if (!product || !product._id) {
     return null; // or display a placeholder/error message
   }
   return (
-    
     <Link to={`/podcast/${product._id}`} style={{ textDecoration: "none" }}>
       <Container type={type}>
         <Image

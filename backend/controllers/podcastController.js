@@ -55,7 +55,6 @@ exports.updatePodcast = catchAsyncErrors(async (req, res, next) => {
       {
         new: true,
       }
-
     );
     res.status(200).json({
       success: true,
@@ -64,8 +63,6 @@ exports.updatePodcast = catchAsyncErrors(async (req, res, next) => {
   } else {
     return next(new ErrorHander("You can update only your podcast!", 403));
   }
-
-  
 });
 
 exports.deletePodcast = catchAsyncErrors(async (req, res, next) => {
@@ -88,10 +85,39 @@ exports.deletePodcast = catchAsyncErrors(async (req, res, next) => {
 
 exports.addView = catchAsyncErrors(async (req, res, next) => {
   try {
-    viewsUpdate = await Podcast.findByIdAndUpdate(req.params.id, {
-      $inc: { views: 1 },
-    });
-    res.status(200).json({ success: true, viewsUpdate });
+    const { id } = req.params;
+
+    const { userId } = req.body;
+    const podcast = await Podcast.findById(id);
+
+    if (!podcast) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Podcast not found" });
+    }
+    if (userId) {
+      if (!podcast.viewedBy.includes(userId)) {
+        const viewsUpdate = await Podcast.findByIdAndUpdate(id, {
+          $inc: { views: 1 },
+          $push: { viewedBy: userId },
+        });
+        res.status(200).json({ success: true, viewsUpdate });
+      }
+    } else {
+      const viewsUpdate = await Podcast.findByIdAndUpdate(id, {
+        $inc: { views: 1 },
+      });
+      res.status(200).json({ success: true, viewsUpdate });
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
+exports.random = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const randomPodcast = await Podcast.aggregate([{ $sample: { size: 3 } }]);
+    res.status(200).json({ success: true, randomPodcast });
   } catch (err) {
     next(err);
   }

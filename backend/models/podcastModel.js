@@ -44,6 +44,10 @@ const podcastSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  viewedBy: {
+    type: [String],
+    default: [],
+  },
   likes: {
     type: [String],
     default: [],

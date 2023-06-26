@@ -5,8 +5,12 @@ const errorMiddleware = require("./middleware/error");
 
 const app = express();
 
-
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true, // Enable sending cookies in cross-origin requests
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
