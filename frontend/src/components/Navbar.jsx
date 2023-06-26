@@ -131,6 +131,7 @@ const Navbar = ({ setSearchResult }) => {
             {dropdownOpen && (
               <Dropdown>
                 <Button onClick={handleSignOut}>Logout</Button>
+                <Button>Settings</Button>
               </Dropdown>
             )}
           </div>
