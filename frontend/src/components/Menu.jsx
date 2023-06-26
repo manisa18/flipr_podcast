@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import ListenUpLogo from "../img/logo.png";
@@ -14,6 +14,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import HelpIcon from "@mui/icons-material/Help";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import MenuIcon from "@mui/icons-material/Menu";
 
 const Container = styled.div`
   flex: 1.3;
@@ -22,6 +23,7 @@ const Container = styled.div`
   color: ${({ theme }) => theme.text};
   position: sticky;
   top: 0;
+
 `;
 
 const Wrapper = styled.div`
@@ -30,6 +32,7 @@ const Wrapper = styled.div`
   top: 0;
   left: 0;
   height: auto;
+  
 `;
 
 const Logo = styled.div`
@@ -56,93 +59,105 @@ const Item = styled.div`
   }
 `;
 
-const Login = styled.div`
-  font-weight: 350;
-`;
-const Button = styled.button`
-  padding: 5px 10px;
-  background-color: #e3f4f4;
-  border: 1px solid #526d82;
-  color: #27374d;
-  border-radius: 3px;
-  font-weight: 500;
-  margin-top: 10px;
-  cursor: pointer;
-  align-items: center;
-  display: flex;
-  gap: 5px;
-`;
 
 const Hr = styled.hr`
   margin: 15px 0px;
   border: 0.5px solid ${({ theme }) => theme.hr};
 `;
 
-const Title = styled.h2`
-  font-size: 14px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.text};
-  margin-bottom: 20px;
-`;
+const HamburgerMenu = styled.div`
+  display: none;
+  cursor: pointer;
 
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+`;
+const HamburgerIcon = styled(MenuIcon)`
+  font-size: 24px;
+`;
+const MenuItemsContainer = styled.div`
+  display: ${({ showMenu }) => (showMenu ? "block" : "none")};
+
+  @media (min-width: 769px) {
+    display: block;
+  }
+`;
 const Menu = ({ darkMode, setDarkMode }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleMenuClick = () => {
+    setMenuOpen(!menuOpen);
+  };
+
   return (
     <Container>
       <Wrapper>
-        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-          <Logo>
-            <Img src={ListenUpLogo} style={{ width: "60px", height: "auto" }} />
-            ListenUp
-          </Logo>
-        </Link>
-        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+        <HamburgerMenu onClick={handleMenuClick}>
+          <HamburgerIcon />
+        </HamburgerMenu>
+
+        <MenuItemsContainer showMenu={menuOpen || window.innerWidth > 768}>
+          <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+            <Logo>
+              <Img
+                src={ListenUpLogo}
+                style={{ width: "60px", height: "auto" }}
+              />
+              ListenUp
+            </Logo>
+          </Link>
+          <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+            <Item>
+              <HomeIcon />
+              Home
+            </Item>
+          </Link>
           <Item>
-            <HomeIcon />
-            Home
+            <DiscoverIcon />
+            Discover
           </Item>
-        </Link>
-        <Item>
-          <DiscoverIcon />
-          Discover
-        </Item>
-        <Item>
-          <LibraryIcon />
-          My Library
-        </Item>
-        <Hr />
-        <Item>
-          <SearchIcon />
-          Search
-        </Item>
-        <Item>
-          <CategoryIcon />
-          Categories
-        </Item>
-        <Item>
-          <DownloadIcon />
-          Downloads
-        </Item>
-        <Item>
-          <RecentIcon />
-          Recently Played
-        </Item>
-        <Item>
-          <SubscriptionsIcon />
-          Subscriptions
-        </Item>
-        <Hr />
-        <Item onClick={() => setDarkMode(!darkMode)}>
-          <DarkModeIcon />
-          {darkMode ? "Light" : "Dark"} Theme
-        </Item>
-        <Item>
-          <SettingsIcon />
-          Settings
-        </Item>
-        <Item>
-          <HelpIcon />
-          Help
-        </Item>
+          <Item>
+            <LibraryIcon />
+            My Library
+          </Item>
+          <Hr />
+          <Item>
+            <SearchIcon />
+            Search
+          </Item>
+          <Item>
+            <CategoryIcon />
+            Categories
+          </Item>
+          <Item>
+            <DownloadIcon />
+            Downloads
+          </Item>
+          <Item>
+            <RecentIcon />
+            Recently Played
+          </Item>
+          <Item>
+            <SubscriptionsIcon />
+            Subscriptions
+          </Item>
+          <Hr />
+          <Item onClick={() => setDarkMode(!darkMode)}>
+            <DarkModeIcon />
+            {darkMode ? "Light" : "Dark"} Theme
+          </Item>
+          <Item>
+            <SettingsIcon />
+            Settings
+          </Item>
+          <Item>
+            <HelpIcon />
+            Help
+          </Item>
+        </MenuItemsContainer>
       </Wrapper>
     </Container>
   );
