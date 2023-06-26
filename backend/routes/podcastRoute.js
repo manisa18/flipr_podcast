@@ -8,11 +8,12 @@ const {
   addView,
   random,
   trend,
+  addViewNoLogin,
 } = require("../controllers/podcastController");
 const { isAuthenticatedUser } = require("../middleware/auth");
 const router = express.Router();
 
-router.route("/").post(isAuthenticatedUser,createPodcast);
+router.route("/").post(isAuthenticatedUser, createPodcast);
 router.route("/").get(getAllPodcast);
 
 router
@@ -21,7 +22,7 @@ router
   .put(isAuthenticatedUser, updatePodcast)
   .delete(isAuthenticatedUser, deletePodcast);
 
-router.route("/view/:id").put(addView);
+router.route("/view/:id").put(isAuthenticatedUser, addView);
 router.route("/random/view").get(random);
 router.route("/trend/view").get(trend);
 

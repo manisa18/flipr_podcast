@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
-// import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import ShareIcon from "@mui/icons-material/Share";
@@ -64,11 +63,6 @@ const ChannelInfo = styled.div`
   display: flex;
   gap: 20px;
 `;
-// const Image = styled.img`
-//   width: 50px;
-//   height: 50px;
-//   border-radius: 50%;
-// `;
 const ChannelDetail = styled.div`
   display: flex;
   flex-direction: column;
@@ -77,12 +71,6 @@ const ChannelDetail = styled.div`
 const ChannelName = styled.span`
   font-weight: 500;
 `;
-// const ChannelCounter = styled.span`
-//   margin-top: 5px;
-//   margin-bottom: 20px;
-//   color: ${({ theme }) => theme.textSoft};
-//   font-size: 13px;
-// `;
 const Description = styled.p`
   font-size: 14px;
 `;
@@ -99,50 +87,84 @@ const Subscribe = styled.button`
 
 const Podcast = () => {
   const { id } = useParams();
-  console.log(id);
   const [podcast, setPodcast] = useState(null);
   const [allpodcast, setAllPodcast] = useState([]);
-
+  const [isLoaded, setIsLoaded] = useState(false);
   useEffect(() => {
-    getpodcast(id);
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/podcast/${id}`
+        );
+        const podcastData = response.data.podcast;
+        setPodcast(podcastData);
+        // console.log(podcastData);
+        setIsLoaded(true);
+      } catch (error) {
+        console.error("Error fetching podcast:", error);
+      }
+    };
+    fetchData();
   }, [id]);
 
-  const getpodcast = async (id) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/api/podcast/${id}`
-      );
-      const podcastData = response.data.podcast;
+  useEffect(() => {
+    if (isLoaded) {
+      updateViews();
+      setIsLoaded(false);
+    }
+  }, [isLoaded]);
 
-      setPodcast(podcastData);
+  const updateViews = async () => {
+    try {
+      const auth = localStorage.getItem("user");
+      let response;
+      if (auth) {
+        const userId = JSON.parse(auth).data.user._id;
+        response = await axios.put(
+          `http://localhost:8000/api/podcast/view/${id}`,
+          { userId },
+          { withCredentials: true }
+        );
+      } else {
+        response = await axios.put(
+          `http://localhost:8000/api/podcast/view/${id}`,
+          {},
+          { withCredentials: true }
+        );
+      }
+
+      if (response.data.success) {
+        console.log("Views updated");
+      } else {
+        console.log("Error updating views:", response.data.message);
+      }
     } catch (error) {
-      console.error("Error fetching podcast:", error);
+      console.error("Error updating views:", error.message);
     }
   };
+
   useEffect(() => {
-    getAllpodcast();
+    getAllPodcasts();
   }, []);
 
-  const getAllpodcast = async () => {
+  const getAllPodcasts = async () => {
     try {
       const response = await axios.get("http://localhost:8000/api/podcast");
       const data = response.data.podcasts;
-
       if (Array.isArray(data)) {
-        // if (id !== data._id) {
         setAllPodcast(data);
-        // }
       } else {
         console.error("Fetched data is not an array:", data);
       }
     } catch (error) {
-      console.error("Error fetching podcast:", error);
+      console.error("Error fetching podcasts:", error);
     }
   };
 
   if (!podcast) {
     return <div>Loading...</div>;
   }
+
   return (
     <Container>
       <Content>
@@ -151,9 +173,8 @@ const Podcast = () => {
             width="100%"
             height="350"
             src={podcast.file}
-            // src="https://www.youtube.com/embed/tgbNymZ7vqY"
             title={podcast.name}
-            frameborder="0"
+            frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen></iframe>
         </PodcastWrapper>
@@ -196,7 +217,6 @@ const Podcast = () => {
             </Avatar>
             <ChannelDetail>
               <ChannelName>{podcast.speaker}</ChannelName>
-              {/* <ChannelCounter>200K subscribers</ChannelCounter> */}
               <Description>{podcast.description}</Description>
             </ChannelDetail>
           </ChannelInfo>
