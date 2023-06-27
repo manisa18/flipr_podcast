@@ -108,6 +108,8 @@ const Podcast = () => {
         if (userId) {
           setIsLiked(podcastData.likes.includes(userId));
           setIsDisliked(podcastData.dislikes.includes(userId));
+        } else {
+          console.log("User Not Logged In");
         }
       } catch (error) {
         console.error("Error fetching podcast:", error);
@@ -172,45 +174,54 @@ const Podcast = () => {
 
   const handleLike = () => {
     const auth = localStorage.getItem("user");
-    const userId = JSON.parse(auth).data.user._id;
-    if (!isLiked) {
-      axios
-        .put(
-          `http://localhost:8000/api/podcast/likes/${id}`,
-          { userId },
-          { withCredentials: true }
-        )
-        .then(() => {
-          setIsLiked(true);
-          if (isDisliked) {
-            setIsDisliked(false);
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+    if (auth) {
+      const userId = JSON.parse(auth).data.user._id;
+      if (!isLiked) {
+        // if (auth) {
+        axios
+          .put(
+            `http://localhost:8000/api/podcast/likes/${id}`,
+            { userId },
+            { withCredentials: true }
+          )
+          .then(() => {
+            setIsLiked(true);
+            if (isDisliked) {
+              setIsDisliked(false);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    } else {
+      console.log("User First Log In");
     }
   };
   const handleDislike = () => {
     const auth = localStorage.getItem("user");
-    const userId = JSON.parse(auth).data.user._id;
-    console.log(userId);
-    if (!isDisliked) {
-      axios
-        .put(
-          `http://localhost:8000/api/podcast/dislikes/${id}`,
-          { userId },
-          { withCredentials: true }
-        )
-        .then(() => {
-          setIsDisliked(true);
-          if (isLiked) {
-            setIsLiked(false);
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+    if (auth) {
+      const userId = JSON.parse(auth).data.user._id;
+      console.log(userId);
+      if (!isDisliked) {
+        axios
+          .put(
+            `http://localhost:8000/api/podcast/dislikes/${id}`,
+            { userId },
+            { withCredentials: true }
+          )
+          .then(() => {
+            setIsDisliked(true);
+            if (isLiked) {
+              setIsLiked(false);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    } else {
+      console.log("User First Log In");
     }
   };
   if (!podcast) {
