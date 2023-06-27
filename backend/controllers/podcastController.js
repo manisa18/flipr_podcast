@@ -140,3 +140,96 @@ exports.trend = catchAsyncErrors(async (req, res, next) => {
     next(err);
   }
 });
+
+exports.likedContent = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const { userId } = req.body;
+    // const userId = req.user.id;
+    console.log(userId);
+
+    const podcast = await Podcast.findById(id);
+
+    if (!podcast) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Podcast not found" });
+    }
+
+    if (!userId) {
+      return res.status(401).json({ message: "User not logged in." });
+    }
+    if (!podcast.likes.includes(userId) && !podcast.dislikes.includes(userId)) {
+      const likesUpdate = await Podcast.findByIdAndUpdate(id, {
+        $push: { likes: userId },
+      });
+      res.status(200).json({ success: true, likesUpdate });
+    } else if (
+      !podcast.likes.includes(userId) &&
+      podcast.dislikes.includes(userId)
+    ) {
+      await Podcast.findByIdAndUpdate(id, {
+        $pull: { dislikes: userId },
+      });
+      const likesUpdate = await Podcast.findByIdAndUpdate(id, {
+        $push: { likes: userId },
+      });
+    } else {
+      if (podcast.likes.includes(userId))
+        res.status(200).json({ success: true, message: "Already Liked" });
+      else if (podcast.dislikes.includes(userId))
+        res.status(200).json({ success: true, message: "Already Disliked" });
+      else res.status(200).json({ success: true, message: "Already Done" });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.dislikedContent = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const { userId } = req.body;
+    // const userId = req.user.id;
+    console.log(userId);
+
+    const podcast = await Podcast.findById(id);
+
+    if (!podcast) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Podcast not found" });
+    }
+
+    if (!userId) {
+      return res.status(401).json({ message: "User not logged in." });
+    }
+    if (!podcast.likes.includes(userId) && !podcast.dislikes.includes(userId)) {
+      const dislikesUpdate = await Podcast.findByIdAndUpdate(id, {
+        $push: { dislikes: userId },
+      });
+      res.status(200).json({ success: true, dislikesUpdate });
+    } else if (
+      podcast.likes.includes(userId) &&
+      !podcast.dislikes.includes(userId)
+    ) {
+      await Podcast.findByIdAndUpdate(id, {
+        $pull: { likes: userId },
+      });
+      const dislikesUpdate = await Podcast.findByIdAndUpdate(id, {
+        $push: { dislikes: userId },
+      });
+      res.status(200).json({ success: true, dislikesUpdate });
+    } else {
+      if (podcast.likes.includes(userId))
+        res.status(200).json({ success: true, message: "Already Liked" });
+      else if (podcast.dislikes.includes(userId))
+        res.status(200).json({ success: true, message: "Already Disliked" });
+      else res.status(200).json({ success: true, message: "Already Done" });
+    }
+  } catch (err) {
+    next(err);
+  }
+};

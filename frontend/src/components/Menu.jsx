@@ -12,7 +12,6 @@ import RecentIcon from "@mui/icons-material/EventRepeat";
 import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import SettingsIcon from "@mui/icons-material/Settings";
 import HelpIcon from "@mui/icons-material/Help";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import MenuIcon from "@mui/icons-material/Menu";
 
@@ -23,7 +22,6 @@ const Container = styled.div`
   color: ${({ theme }) => theme.text};
   position: sticky;
   top: 0;
-
 `;
 
 const Wrapper = styled.div`
@@ -32,7 +30,6 @@ const Wrapper = styled.div`
   top: 0;
   left: 0;
   height: auto;
-  
 `;
 
 const Logo = styled.div`
@@ -41,10 +38,18 @@ const Logo = styled.div`
   gap: 5px;
   font-weight: bold;
   margin-bottom: 25px;
+  @media (max-width: 768px) {
+    margin-bottom: 10px;
+  }
 `;
 
 const Img = styled.img`
-    height = 25px;
+  width: 60px;
+  height: auto;
+  @media (max-width: 768px) {
+    width: 40px;
+    height: auto;
+  }
 `;
 
 const Item = styled.div`
@@ -59,7 +64,6 @@ const Item = styled.div`
   }
 `;
 
-
 const Hr = styled.hr`
   margin: 15px 0px;
   border: 0.5px solid ${({ theme }) => theme.hr};
@@ -71,8 +75,9 @@ const HamburgerMenu = styled.div`
 
   @media (max-width: 768px) {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 0 0 10px 0;
+    align-items: left;
+    justify-content: flex-start;
   }
 `;
 const HamburgerIcon = styled(MenuIcon)`
@@ -102,10 +107,7 @@ const Menu = ({ darkMode, setDarkMode }) => {
         <MenuItemsContainer showMenu={menuOpen || window.innerWidth > 768}>
           <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
             <Logo>
-              <Img
-                src={ListenUpLogo}
-                style={{ width: "60px", height: "auto" }}
-              />
+              <Img src={ListenUpLogo} />
               ListenUp
             </Logo>
           </Link>
