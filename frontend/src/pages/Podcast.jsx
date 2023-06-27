@@ -3,7 +3,9 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import ShareIcon from "@mui/icons-material/Share";
 import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
 import Card from "../components/Card";
@@ -90,6 +92,8 @@ const Podcast = () => {
   const [podcast, setPodcast] = useState(null);
   const [allpodcast, setAllPodcast] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isDisliked, setIsDisliked] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -98,8 +102,13 @@ const Podcast = () => {
         );
         const podcastData = response.data.podcast;
         setPodcast(podcastData);
-        // console.log(podcastData);
         setIsLoaded(true);
+        const auth = localStorage.getItem("user");
+        const userId = JSON.parse(auth).data.user._id;
+        if (userId) {
+          setIsLiked(podcastData.likes.includes(userId));
+          setIsDisliked(podcastData.dislikes.includes(userId));
+        }
       } catch (error) {
         console.error("Error fetching podcast:", error);
       }
@@ -161,6 +170,49 @@ const Podcast = () => {
     }
   };
 
+  const handleLike = () => {
+    const auth = localStorage.getItem("user");
+    const userId = JSON.parse(auth).data.user._id;
+    if (!isLiked) {
+      axios
+        .put(
+          `http://localhost:8000/api/podcast/likes/${id}`,
+          { userId },
+          { withCredentials: true }
+        )
+        .then(() => {
+          setIsLiked(true);
+          if (isDisliked) {
+            setIsDisliked(false);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  };
+  const handleDislike = () => {
+    const auth = localStorage.getItem("user");
+    const userId = JSON.parse(auth).data.user._id;
+    console.log(userId);
+    if (!isDisliked) {
+      axios
+        .put(
+          `http://localhost:8000/api/podcast/dislikes/${id}`,
+          { userId },
+          { withCredentials: true }
+        )
+        .then(() => {
+          setIsDisliked(true);
+          if (isLiked) {
+            setIsLiked(false);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  };
   if (!podcast) {
     return <div>Loading...</div>;
   }
@@ -182,12 +234,12 @@ const Podcast = () => {
         <Details>
           <Info>{podcast.views} ● 1 day ago</Info>
           <Buttons>
-            <Button>
-              <ThumbUpOffAltIcon />
+            <Button onClick={handleLike}>
+              {isLiked ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />}
               Like
             </Button>
-            <Button>
-              <ThumbDownOffAltIcon />
+            <Button onClick={handleDislike}>
+              {isDisliked ? <ThumbDownIcon /> : <ThumbDownOffAltIcon />}
               Dislike
             </Button>
             <Button>
