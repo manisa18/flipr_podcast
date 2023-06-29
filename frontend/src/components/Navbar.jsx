@@ -128,6 +128,7 @@ const Navbar = ({ setSearchResult }) => {
                 bgcolor: "#ffff",
                 width: 30,
                 height: 30,
+                cursor: "pointer"
               }}
               onClick={handleDropdown}
             >
