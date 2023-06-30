@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import moment from "moment";
+
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
@@ -75,6 +77,7 @@ const ChannelName = styled.span`
 `;
 const Description = styled.p`
   font-size: 14px;
+  color: ${({ theme }) => theme.text};
 `;
 const Subscribe = styled.button`
   background-color: #73bbc9;
@@ -86,7 +89,12 @@ const Subscribe = styled.button`
   padding: 10px 20px;
   cursor: pointer;
 `;
-
+const ToggleBtn = styled.button`
+  color: #73bbc9;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+`;
 const Podcast = () => {
   const { id } = useParams();
   const [podcast, setPodcast] = useState(null);
@@ -94,6 +102,8 @@ const Podcast = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -227,6 +237,33 @@ const Podcast = () => {
       console.log("User First Log In");
     }
   };
+  const toggleDescription = () => {
+    setShowFullDescription((prevValue) => !prevValue);
+  };
+
+  function getTimeDifference(uploadedDate) {
+    const currentTime = moment();
+    const diffDuration = moment.duration(currentTime.diff(uploadedDate));
+    const years = diffDuration.years();
+    const months = diffDuration.months();
+    const days = diffDuration.days();
+    const hours = diffDuration.hours();
+
+    if (years > 0) {
+      return `${years} year${years > 1 ? "s" : ""}`;
+    } else if (months > 0) {
+      return `${months} month${months > 1 ? "s" : ""}`;
+    } else if (days > 0 && hours > 0) {
+      return `${days} day${days > 1 ? "s" : ""} ${hours} hour${
+        hours > 1 ? "s" : ""
+      }`;
+    } else if (days > 0) {
+      return `${days} day${days > 1 ? "s" : ""}`;
+    } else {
+      return `${hours} hour${hours > 1 ? "s" : ""}`;
+    }
+  }
+
   if (!podcast) {
     return <div>Loading...</div>;
   }
@@ -246,7 +283,10 @@ const Podcast = () => {
         </PodcastWrapper>
         <Title>{podcast.name}</Title>
         <Details>
-          <Info>{podcast.views} ● 1 day ago</Info>
+          <Info>
+            {podcast.views} views ● {getTimeDifference(podcast.uploadedDate)}{" "}
+            ago
+          </Info>
           <Buttons>
             <Button onClick={handleLike}>
               {isLiked ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />}
@@ -283,16 +323,34 @@ const Podcast = () => {
             </Avatar>
             <ChannelDetail>
               <ChannelName>{podcast.speaker}</ChannelName>
-              <Description>{podcast.description}</Description>
             </ChannelDetail>
           </ChannelInfo>
           <Subscribe>SUBSCRIBE</Subscribe>
         </Channel>
+        <Hr />
+
+        {podcast.description && (
+          <Description>
+            {showFullDescription
+              ? podcast.description
+              : podcast.description.split(" ").slice(0, 30).join(" ")}
+            {podcast.description.split(" ").length > 30 && (
+              <span>
+                <ToggleBtn onClick={toggleDescription}>
+                  {showFullDescription ? "...Less" : "...More"}
+                </ToggleBtn>
+              </span>
+            )}
+          </Description>
+        )}
       </Content>
       <Recommendation>
-        {allpodcast.map((product) => (
-          <Card key={product._id} type="sm" product={product} />
-        ))}
+        {allpodcast.map((product) => {
+          if (product._id !== id) {
+            return <Card key={product._id} type="sm" product={product} />;
+          }
+          return null; // Exclude the product with matching id
+        })}
       </Recommendation>
     </Container>
   );
