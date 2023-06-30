@@ -16,6 +16,10 @@ const podcastSchema = new mongoose.Schema({
     required: [true, "Please Enter Category"],
     enum: ["Music", "Sports", "News", "Education", "Technology", "Other"],
   },
+  uploadedDate: {
+    type: Date,
+    default: Date.now,
+  },
   views: {
     type: Number,
     default: 0,
@@ -39,6 +43,11 @@ const podcastSchema = new mongoose.Schema({
     // ref: "File",
     required: true,
   },
+  followers: {
+    type: [mongoose.Schema.ObjectId],
+    ref: "User",
+    default: [],
+  },
   user: {
     type: mongoose.Schema.ObjectId,
     ref: "User",
@@ -48,12 +57,30 @@ const podcastSchema = new mongoose.Schema({
     type: [String],
     default: [],
   },
+  likesCount: {
+    type: Number,
+    default: 0,
+  },
   likes: {
     type: [String],
     default: [],
   },
+  dislikesCount: {
+    type: Number,
+    default: 0,
+  },
   dislikes: {
     type: [String],
+    default: [],
+  },
+  files: {
+    type: [mongoose.Schema.ObjectId],
+    ref: "File",
+    default: [],
+  },
+  episodes: {
+    type: [mongoose.Schema.ObjectId],
+    ref: "Episode",
     default: [],
   },
 });
