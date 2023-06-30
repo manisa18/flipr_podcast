@@ -39,6 +39,7 @@ const Input = styled.input`
   border: none;
   background-color: transparent;
   color: ${({ theme }) => theme.text};
+  width: 100%;
 
   &:focus {
     outline: none;
@@ -82,8 +83,13 @@ const Navbar = ({ setSearchResult }) => {
 
   const handleSignOut = () => {
     localStorage.clear();
-    setDropdownOpen(!dropdownOpen);
+    setDropdownOpen(false);
     navigate("/");
+  };
+
+  const handleSettings = () => {
+    setDropdownOpen(false);
+    navigate("/settings");
   };
 
   const handleSearchClick = async () => {
@@ -97,6 +103,7 @@ const Navbar = ({ setSearchResult }) => {
       console.error("Error fetching search results:", error);
     }
   };
+
   return (
     <Container>
       <Wrapper>
@@ -109,7 +116,8 @@ const Navbar = ({ setSearchResult }) => {
 
           <Button
             onClick={handleSearchClick}
-            style={{ backgroundColor: "transparent", border: "none" }}>
+            style={{ backgroundColor: "transparent", border: "none" }}
+          >
             <SearchIcon />
           </Button>
         </Search>
@@ -120,18 +128,21 @@ const Navbar = ({ setSearchResult }) => {
                 bgcolor: "#ffff",
                 width: 30,
                 height: 30,
+                cursor: "pointer"
               }}
-              onClick={handleDropdown}>
+              onClick={handleDropdown}
+            >
               <Typography
                 variant="subtitle1"
-                sx={{ color: "#282c3c", fontSize: 20 }}>
+                sx={{ color: "#282c3c", fontSize: 20 }}
+              >
                 {JSON.parse(auth).data.user.name[0].toUpperCase()}
               </Typography>
             </Avatar>
             {dropdownOpen && (
               <Dropdown>
+                <Button onClick={handleSettings}>Settings</Button>
                 <Button onClick={handleSignOut}>Logout</Button>
-                <Button>Settings</Button>
               </Dropdown>
             )}
           </div>

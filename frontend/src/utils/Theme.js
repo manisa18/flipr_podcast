@@ -4,7 +4,8 @@ export const darkTheme = {
     navbar: "#212A3E",
     text: "white",
     textSoft: "#C4DFDF",
-    hr: "#9DB2BF"
+    hr: "#9DB2BF",
+    setting: "#DDE6ED"
 }
 
 export const lightTheme = {
@@ -13,5 +14,6 @@ export const lightTheme = {
     navbar: "#9DB2BF",
     text: "black",
     textSoft: "#7F8487",
-    hr: "#526D82"
+    hr: "#526D82",
+    setting: "#9DB2BF"
 }

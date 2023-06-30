@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import Podcast from "./pages/Podcast";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import Settings from "./pages/Settings";
 
 const Container = styled.div`
   display: flex;
@@ -41,6 +42,7 @@ function App() {
                 <Route path="signin" element={<SignIn />} />
                 <Route path="signup" element={<SignUp />} />
                 <Route path="podcast/:id" element={<Podcast />} />
+                <Route path="settings" element={<Settings />} />
               </Routes>
             </Wrapper>
           </Main>
