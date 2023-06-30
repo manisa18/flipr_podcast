@@ -123,15 +123,6 @@ exports.random = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-exports.random = catchAsyncErrors(async (req, res, next) => {
-  try {
-    const randomPodcast = await Podcast.aggregate([{ $sample: { size: 3 } }]);
-    res.status(200).json({ success: true, randomPodcast });
-  } catch (err) {
-    next(err);
-  }
-});
-
 exports.trend = catchAsyncErrors(async (req, res, next) => {
   try {
     const trendPodcast = await Podcast.find().sort({ view: -1 });
@@ -175,12 +166,14 @@ exports.likedContent = async (req, res, next) => {
       const likesUpdate = await Podcast.findByIdAndUpdate(id, {
         $push: { likes: userId },
       });
-    } else {
-      if (podcast.likes.includes(userId))
-        res.status(200).json({ success: true, message: "Already Liked" });
-      else if (podcast.dislikes.includes(userId))
-        res.status(200).json({ success: true, message: "Already Disliked" });
-      else res.status(200).json({ success: true, message: "Already Done" });
+      res.status(200).json({ success: true, likesUpdate });
+    } else if (
+      podcast.likes.includes(userId) &&
+      !podcast.dislikes.includes(userId)
+    ) {
+      await Podcast.findByIdAndUpdate(id, {
+        $pull: { likes: userId },
+      });
     }
   } catch (err) {
     next(err);
@@ -222,12 +215,13 @@ exports.dislikedContent = async (req, res, next) => {
         $push: { dislikes: userId },
       });
       res.status(200).json({ success: true, dislikesUpdate });
-    } else {
-      if (podcast.likes.includes(userId))
-        res.status(200).json({ success: true, message: "Already Liked" });
-      else if (podcast.dislikes.includes(userId))
-        res.status(200).json({ success: true, message: "Already Disliked" });
-      else res.status(200).json({ success: true, message: "Already Done" });
+    } else if (
+      podcast.dislikes.includes(userId) &&
+      !podcast.likes.includes(userId)
+    ) {
+      await Podcast.findByIdAndUpdate(id, {
+        $pull: { dislikes: userId },
+      });
     }
   } catch (err) {
     next(err);

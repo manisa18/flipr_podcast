@@ -178,21 +178,22 @@ const Podcast = () => {
       const userId = JSON.parse(auth).data.user._id;
       if (!isLiked) {
         // if (auth) {
-        axios
-          .put(
-            `http://localhost:8000/api/podcast/likes/${id}`,
-            { userId },
-            { withCredentials: true }
-          )
-          .then(() => {
-            setIsLiked(true);
-            if (isDisliked) {
-              setIsDisliked(false);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        axios.put(
+          `http://localhost:8000/api/podcast/likes/${id}`,
+          { userId },
+          { withCredentials: true }
+        );
+        setIsLiked(true);
+        if (isDisliked) {
+          setIsDisliked(false);
+        }
+      } else if (isLiked) {
+        axios.put(
+          `http://localhost:8000/api/podcast/likes/${id}`,
+          { userId },
+          { withCredentials: true }
+        );
+        setIsLiked(false);
       }
     } else {
       console.log("User First Log In");
@@ -204,21 +205,23 @@ const Podcast = () => {
       const userId = JSON.parse(auth).data.user._id;
       console.log(userId);
       if (!isDisliked) {
-        axios
-          .put(
-            `http://localhost:8000/api/podcast/dislikes/${id}`,
-            { userId },
-            { withCredentials: true }
-          )
-          .then(() => {
-            setIsDisliked(true);
-            if (isLiked) {
-              setIsLiked(false);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        axios.put(
+          `http://localhost:8000/api/podcast/dislikes/${id}`,
+          { userId },
+          { withCredentials: true }
+        );
+        setIsDisliked(true);
+        if (isLiked) {
+          setIsLiked(false);
+        }
+      }
+      if (isDisliked) {
+        axios.put(
+          `http://localhost:8000/api/podcast/dislikes/${id}`,
+          { userId },
+          { withCredentials: true }
+        );
+        setIsDisliked(false);
       }
     } else {
       console.log("User First Log In");
