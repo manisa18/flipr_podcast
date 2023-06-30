@@ -4,17 +4,13 @@ const sendToken = require("../utils/jwtToken");
 const User = require("../models/userModel");
 
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
-  const { name, email, password,
-    // gender, month, date, year
-  } = req.body;
+  const { name, email, password, gender, dob } = req.body;
   const user = await User.create({
     name,
     email,
     password,
-    // gender,
-    // month,
-    // date,
-    // year,
+    gender,
+    dob,
     // avatar: {
     //   public_id: "this is a sample id",
     //   url: "profilephoto",

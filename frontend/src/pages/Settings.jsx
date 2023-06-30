@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
-import {Grid, TextField, Button} from "@mui/material";
-
+import { Grid, TextField, Button } from "@mui/material";
 
 const Container = styled.div`
   display: flex;
@@ -44,10 +43,10 @@ const Btn = {
   alignItems: "center",
   display: "flex",
   gap: "5px",
-  "&:hover":{
+  "&:hover": {
     backgroundColor: "#176B87",
-    color: "#ffff"
-  }
+    color: "#ffff",
+  },
 };
 
 const BtnSave = {
@@ -61,10 +60,10 @@ const BtnSave = {
   alignItems: "center",
   display: "flex",
   gap: "5px",
-  "&:hover":{
+  "&:hover": {
     backgroundColor: "#03C988",
-    color: "#ffff"
-  }
+    color: "#ffff",
+  },
 };
 
 const BtnCancel = {
@@ -78,20 +77,19 @@ const BtnCancel = {
   alignItems: "center",
   display: "flex",
   gap: "5px",
-  "&:hover":{
+  "&:hover": {
     backgroundColor: "#B70404",
-    color: "#ffff"
-  }
+    color: "#ffff",
+  },
 };
 
 const textFieldStyle = {
   "& .MuiOutlinedInput-root": {
     "& fieldset": {
-      borderColor: "black !important", 
+      borderColor: "black !important",
     },
   },
 };
-
 
 const Settings = () => {
   const [isEditMode, setIsEditMode] = useState({
@@ -99,11 +97,33 @@ const Settings = () => {
     email: false,
     password: false,
   });
-  const [editedAccountName, setEditedAccountName] = useState("John Doe");
-  const [editedEmail, setEditedEmail] = useState("johndoe@example.com");
-  const [editedPassword, setEditedPassword] = useState("********");
+  const [accountName, setAccountName] = useState("");
+  const [email, setEmail] = useState("");
+  // const [password, setPassword] = useState("");
+  const [editedAccountName, setEditedAccountName] = useState("");
+  const [editedEmail, setEditedEmail] = useState("");
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    fetchProfileDetails();
+  }, []);
+
+  const fetchProfileDetails = async () => {
+    try {
+      const auth = localStorage.getItem("user");
+      const userId = JSON.parse(auth).data.user._id;
+      const response = await axios.get(
+        `http://localhost:8000/profile/${userId}`
+      );
+
+      setAccountName(response.data.user.name);
+      setEditedAccountName(response.data.user.name);
+      setEmail(response.data.user.email);
+      setEditedEmail(response.data.user.email);
+      // setPassword(response.data.user.password);
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  };
 
   const handleEditClick = (field) => {
     setIsEditMode((prevState) => ({
@@ -117,23 +137,43 @@ const Settings = () => {
       ...prevState,
       [field]: false,
     }));
+
+    // Reset the edited values back to the original values
+    if (field === "accountName") {
+      setEditedAccountName(accountName);
+    } else if (field === "email") {
+      setEditedEmail(email);
+    }
   };
 
-  const handleSaveClick = (field) => {
-    // Add code to save the edited account details
+  const handleSaveClick = async (field) => {
     setIsEditMode((prevState) => ({
       ...prevState,
       [field]: false,
     }));
-  };
 
-  const handleSubmit = (e, field) => {
-    e.preventDefault();
-    // Add code to update the user's account information based on the form inputs
-    setIsEditMode((prevState) => ({
-      ...prevState,
-      [field]: false,
-    }));
+    try {
+      const auth = localStorage.getItem("user");
+      const userId = JSON.parse(auth).data.user._id;
+
+      let newData;
+      if (field === "accountName") {
+        newData = { name: editedAccountName };
+      } else if (field === "email") {
+        newData = { email: editedEmail };
+      }
+      await axios.put(
+        `http://localhost:8000/profile/${userId}`,
+        {
+          newData,
+          userId,
+        },
+        { withCredentials: true }
+      );
+      fetchProfileDetails();
+    } catch (error) {
+      console.error("Error updating user details:", error);
+    }
   };
 
   return (
@@ -143,38 +183,36 @@ const Settings = () => {
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={8}>
             <TextField
-            sx={
-        textFieldStyle
-      }
+              sx={textFieldStyle}
               fullWidth
               label="Name"
-              value={editedAccountName}
+              value={isEditMode.accountName ? editedAccountName : accountName}
               disabled={!isEditMode.accountName}
               onChange={(e) => setEditedAccountName(e.target.value)}
             />
           </Grid>
           <Grid item xs={2}>
             {isEditMode.accountName ? (
-              <Button sx={{...BtnSave}}
+              <Button
+                sx={{ ...BtnSave }}
                 variant="contained"
-                
-                onClick={() => handleSaveClick("accountName")}
-              >
+                onClick={() => handleSaveClick("accountName")}>
                 Save
               </Button>
             ) : (
-              <Button sx={{...Btn}}
+              <Button
+                sx={{ ...Btn }}
                 variant="contained"
-                
-                onClick={() => handleEditClick("accountName")}
-              >
+                onClick={() => handleEditClick("accountName")}>
                 Edit
               </Button>
             )}
           </Grid>
           <Grid item xs={2}>
             {isEditMode.accountName && (
-              <Button sx={{ ...BtnCancel}} onClick={() => handleCancelClick("accountName")}>
+              <Button
+                sx={{ ...BtnCancel }}
+                onClick={() => handleCancelClick("accountName")}>
                 Cancel
               </Button>
             )}
@@ -183,49 +221,45 @@ const Settings = () => {
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={8}>
             <TextField
-           sx={
-            textFieldStyle
-          }
+              sx={textFieldStyle}
               fullWidth
               label="Email"
-              value={editedEmail}
+              value={isEditMode.email ? editedEmail : email}
               disabled={!isEditMode.email}
               onChange={(e) => setEditedEmail(e.target.value)}
             />
           </Grid>
           <Grid item xs={2}>
             {isEditMode.email ? (
-              <Button sx={{...BtnSave}}
+              <Button
+                sx={{ ...BtnSave }}
                 variant="contained"
-                
-                onClick={() => handleSaveClick("email")}
-              >
+                onClick={() => handleSaveClick("email")}>
                 Save
               </Button>
             ) : (
-              <Button sx={{...Btn}}
+              <Button
+                sx={{ ...Btn }}
                 variant="contained"
-                
-                onClick={() => handleEditClick("email")}
-              >
+                onClick={() => handleEditClick("email")}>
                 Edit
               </Button>
             )}
           </Grid>
           <Grid item xs={2}>
             {isEditMode.email && (
-              <Button sx={{ ...BtnCancel}} onClick={() => handleCancelClick("email")}>
+              <Button
+                sx={{ ...BtnCancel }}
+                onClick={() => handleCancelClick("email")}>
                 Cancel
               </Button>
             )}
           </Grid>
         </Grid>
-        <Grid container spacing={2} alignItems="center">
+        {/* <Grid container spacing={2} alignItems="center">
           <Grid item xs={8}>
             <TextField
-            sx={
-              textFieldStyle
-            }
+              sx={textFieldStyle}
               fullWidth
               label="Password"
               type="password"
@@ -233,20 +267,20 @@ const Settings = () => {
               disabled={!isEditMode.password}
               onChange={(e) => setEditedPassword(e.target.value)}
             />
-          </Grid>
-          <Grid item xs={2}>
+          </Grid> */}
+        {/* <Grid item xs={2}>
             {isEditMode.password ? (
-              <Button sx={{...BtnSave}}
+              <Button
+                sx={{ ...BtnSave }}
                 variant="contained"
-                
                 onClick={() => handleSaveClick("password")}
               >
                 Save
               </Button>
             ) : (
-              <Button sx={{...Btn}}
+              <Button
+                sx={{ ...Btn }}
                 variant="contained"
-                
                 onClick={() => handleEditClick("password")}
               >
                 Edit
@@ -255,12 +289,15 @@ const Settings = () => {
           </Grid>
           <Grid item xs={2}>
             {isEditMode.password && (
-              <Button sx={{ ...BtnCancel}} onClick={() => handleCancelClick("password")}>
+              <Button
+                sx={{ ...BtnCancel }}
+                onClick={() => handleCancelClick("password")}
+              >
                 Cancel
               </Button>
             )}
-          </Grid>
-        </Grid>
+          </Grid> */}
+        {/* </Grid> */}
       </Wrapper>
     </Container>
   );
