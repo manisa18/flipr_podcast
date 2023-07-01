@@ -92,7 +92,6 @@ const MenuItemsContainer = styled.div`
 `;
 const Menu = ({ darkMode, setDarkMode, handleSearchMenu }) => {
   const [menuOpen, setMenuOpen] = useState(false);
-  
 
   const handleMenuClick = () => {
     setMenuOpen(!menuOpen);
@@ -122,10 +121,14 @@ const Menu = ({ darkMode, setDarkMode, handleSearchMenu }) => {
             <DiscoverIcon />
             Discover
           </Item> */}
-          <Item>
-            <LibraryIcon />
-            My Library
-          </Item>
+          <Link
+            to="/mylibrary"
+            style={{ textDecoration: "none", color: "inherit" }}>
+            <Item>
+              <LibraryIcon />
+              My Library
+            </Item>
+          </Link>
           <Hr />
           <Item onClick={handleSearchMenu}>
             <SearchIcon />

@@ -6,6 +6,10 @@ const ApiFeatures = require("../utils/apifeatures");
 
 exports.createPodcast = catchAsyncErrors(async (req, res, next) => {
   const podcast = await Podcast.create({ user: req.user.id, ...req.body });
+
+   await User.findByIdAndUpdate(req.user.id, {
+     $push: { playlist: podcast._id },
+   });
   res.status(201).json({
     success: true,
     podcast,
