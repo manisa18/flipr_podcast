@@ -12,6 +12,7 @@ const {
   dislikedContent,
   savedPodcast,
   getAllSavedPodcast,
+  groupPodcastsByCategory,
 } = require("../controllers/podcastController");
 const { isAuthenticatedUser } = require("../middleware/auth");
 const router = express.Router();

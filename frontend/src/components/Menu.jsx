@@ -134,10 +134,12 @@ const Menu = ({ darkMode, setDarkMode, handleSearchMenu }) => {
             <SearchIcon />
             Search
           </Item>
-          <Item>
-            <CategoryIcon />
-            Categories
-          </Item>
+          <Link to="/categories" style={{ textDecoration: "none", color: "inherit" }}>
+            <Item>
+              <CategoryIcon />
+              Categories
+            </Item>
+          </Link>
           {/* <Item>
             <DownloadIcon />
             Downloads

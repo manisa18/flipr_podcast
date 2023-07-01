@@ -40,7 +40,13 @@ class ApiFeatures {
 
     return this;
   }
-
+  filterByCategory() {
+    const category = this.queryStr.category;
+    if (category) {
+      this.query = this.query.find({ category });
+    }
+    return this;
+  }
 }
 
 module.exports = ApiFeatures;
