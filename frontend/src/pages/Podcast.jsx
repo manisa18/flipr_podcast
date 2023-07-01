@@ -8,7 +8,8 @@ import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
-import ShareIcon from "@mui/icons-material/Share";
+// import ShareIcon from "@mui/icons-material/Share";
+import LibraryAddOutlinedIcon from "@mui/icons-material/LibraryAddOutlined";
 import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
 import Card from "../components/Card";
 import Avatar from "@mui/material/Avatar";
@@ -102,6 +103,7 @@ const Podcast = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
 
   useEffect(() => {
@@ -116,8 +118,12 @@ const Podcast = () => {
         const auth = localStorage.getItem("user");
         const userId = JSON.parse(auth).data.user._id;
         if (userId) {
+          const response = await axios.get(
+            `http://localhost:8000/profile/${userId}`
+          );
           setIsLiked(podcastData.likes.includes(userId));
           setIsDisliked(podcastData.dislikes.includes(userId));
+          setIsSaved(response.data.user.savedPlaylist.includes(id));
         } else {
           console.log("User Not Logged In");
         }
@@ -224,14 +230,38 @@ const Podcast = () => {
         if (isLiked) {
           setIsLiked(false);
         }
-      }
-      if (isDisliked) {
+      } else if (isDisliked) {
         axios.put(
           `http://localhost:8000/api/podcast/dislikes/${id}`,
           { userId },
           { withCredentials: true }
         );
         setIsDisliked(false);
+      }
+    } else {
+      console.log("User First Log In");
+    }
+  };
+
+  const handleSave = async () => {
+    const auth = localStorage.getItem("user");
+    if (auth) {
+      const userId = JSON.parse(auth).data.user._id;
+      console.log(userId);
+      if (!isSaved) {
+        axios.put(
+          `http://localhost:8000/api/podcast/save/${id}`,
+          { userId },
+          { withCredentials: true }
+        );
+        setIsSaved(true);
+      } else if (isSaved) {
+        axios.put(
+          `http://localhost:8000/api/podcast/save/${id}`,
+          { userId },
+          { withCredentials: true }
+        );
+        setIsSaved(false);
       }
     } else {
       console.log("User First Log In");
@@ -284,7 +314,7 @@ const Podcast = () => {
         <Title>{podcast.name}</Title>
         <Details>
           <Info>
-            {podcast.views} views ● {getTimeDifference(podcast.uploadedDate)}{" "}
+            {podcast.views} views ● {getTimeDifference(podcast.uploadedDate)}
             ago
           </Info>
           <Buttons>
@@ -296,12 +326,12 @@ const Podcast = () => {
               {isDisliked ? <ThumbDownIcon /> : <ThumbDownOffAltIcon />}
               Dislike
             </Button>
-            <Button>
+            {/* <Button>
               <ShareIcon />
               Share
-            </Button>
-            <Button>
-              <LibraryAddIcon />
+            </Button> */}
+            <Button onClick={handleSave}>
+              {isSaved ? <LibraryAddIcon /> : <LibraryAddOutlinedIcon />}
               Save
             </Button>
           </Buttons>

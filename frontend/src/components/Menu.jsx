@@ -90,8 +90,9 @@ const MenuItemsContainer = styled.div`
     display: block;
   }
 `;
-const Menu = ({ darkMode, setDarkMode }) => {
+const Menu = ({ darkMode, setDarkMode, handleSearchMenu }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  
 
   const handleMenuClick = () => {
     setMenuOpen(!menuOpen);
@@ -117,16 +118,16 @@ const Menu = ({ darkMode, setDarkMode }) => {
               Home
             </Item>
           </Link>
-          <Item>
+          {/* <Item>
             <DiscoverIcon />
             Discover
-          </Item>
+          </Item> */}
           <Item>
             <LibraryIcon />
             My Library
           </Item>
           <Hr />
-          <Item>
+          <Item onClick={handleSearchMenu}>
             <SearchIcon />
             Search
           </Item>
@@ -134,14 +135,18 @@ const Menu = ({ darkMode, setDarkMode }) => {
             <CategoryIcon />
             Categories
           </Item>
-          <Item>
+          {/* <Item>
             <DownloadIcon />
             Downloads
-          </Item>
-          <Item>
-            <RecentIcon />
-            Recently Played
-          </Item>
+          </Item> */}
+          <Link
+            to="/savedpodcast"
+            style={{ textDecoration: "none", color: "inherit" }}>
+            <Item>
+              <RecentIcon />
+              Saved Podcast
+            </Item>
+          </Link>
           <Item>
             <SubscriptionsIcon />
             Subscriptions
@@ -151,14 +156,14 @@ const Menu = ({ darkMode, setDarkMode }) => {
             <DarkModeIcon />
             {darkMode ? "Light" : "Dark"} Theme
           </Item>
-          <Item>
+          {/* <Item>
             <SettingsIcon />
             Settings
-          </Item>
-          <Item>
+          </Item> */}
+          {/* <Item>
             <HelpIcon />
             Help
-          </Item>
+          </Item> */}
         </MenuItemsContainer>
       </Wrapper>
     </Container>
