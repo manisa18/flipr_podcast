@@ -133,12 +133,11 @@ exports.trend = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-exports.likedContent = async (req, res, next) => {
+exports.likedContent = catchAsyncErrors(async (req, res, next) => {
   try {
     const { id } = req.params;
 
     const { userId } = req.body;
-    console.log(userId);
 
     const podcast = await Podcast.findById(id);
 
@@ -197,15 +196,14 @@ exports.likedContent = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
+});
 
-exports.dislikedContent = async (req, res, next) => {
+exports.dislikedContent = catchAsyncErrors(async (req, res, next) => {
   try {
     const { id } = req.params;
 
     const { userId } = req.body;
     // const userId = req.user.id;
-    console.log(userId);
 
     const podcast = await Podcast.findById(id);
 
@@ -264,4 +262,41 @@ exports.dislikedContent = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
+});
+
+exports.savedPodcast = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const { userId } = req.body;
+    // const userId = req.user.id;
+
+    const podcast = await Podcast.findById(id);
+
+    if (!podcast) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Podcast not found" });
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    if (!user.savedPlaylist.includes(id)) {
+      await User.findByIdAndUpdate(userId, {
+        $push: { savedPlaylist: id },
+      });
+    } else if (user.savedPlaylist.includes(id)) {
+      await User.findByIdAndUpdate(userId, {
+        $pull: { savedPlaylist: id },
+      });
+    }
+  } catch (err) {
+    next(err);
+  }
+});

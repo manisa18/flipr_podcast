@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
+import moment from "moment";
 
 const Container = styled.div`
   width: ${(props) => (props.type !== "sm" ? "290px" : "300px")};
@@ -50,9 +51,32 @@ const Info = styled.div`
 `;
 
 const Card = ({ type, product }) => {
+  function getTimeDifference(uploadedDate) {
+    const currentTime = moment();
+    const diffDuration = moment.duration(currentTime.diff(uploadedDate));
+    const years = diffDuration.years();
+    const months = diffDuration.months();
+    const days = diffDuration.days();
+    const hours = diffDuration.hours();
+
+    if (years > 0) {
+      return `${years} year${years > 1 ? "s" : ""}`;
+    } else if (months > 0) {
+      return `${months} month${months > 1 ? "s" : ""}`;
+    } else if (days > 0 && hours > 0) {
+      return `${days} day${days > 1 ? "s" : ""} ${hours} hour${
+        hours > 1 ? "s" : ""
+      }`;
+    } else if (days > 0) {
+      return `${days} day${days > 1 ? "s" : ""}`;
+    } else {
+      return `${hours} hour${hours > 1 ? "s" : ""}`;
+    }
+  }
   if (!product || !product._id) {
     return null; // or display a placeholder/error message
   }
+
   return (
     <Link to={`/podcast/${product._id}`} style={{ textDecoration: "none" }}>
       <Container type={type}>
@@ -77,7 +101,10 @@ const Card = ({ type, product }) => {
           <Texts>
             <Title>{product.name}</Title>
             {/* <ChannelName>FLIPR</ChannelName> */}
-            <Info type={type}>{product.views} views ● 1 day ago</Info>
+            <Info type={type}>
+              {product.views} views ● {getTimeDifference(product.uploadedDate)}{" "}
+              ago
+            </Info>
           </Texts>
         </Details>
       </Container>

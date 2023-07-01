@@ -10,6 +10,8 @@ const {
   trend,
   likedContent,
   dislikedContent,
+  savedPodcast,
+  getAllSavedPodcast,
 } = require("../controllers/podcastController");
 const { isAuthenticatedUser } = require("../middleware/auth");
 const router = express.Router();
@@ -28,5 +30,6 @@ router.route("/random/view").get(random);
 router.route("/trend/view").get(trend);
 router.route("/likes/:id").put(isAuthenticatedUser, likedContent);
 router.route("/dislikes/:id").put(isAuthenticatedUser, dislikedContent);
+router.route("/save/:id").put(isAuthenticatedUser, savedPodcast);
 
 module.exports = router;

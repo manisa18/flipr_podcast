@@ -43,6 +43,10 @@ const userSchema = new mongoose.Schema({
     type: [String],
     default: [],
   },
+  savedPlaylist: {
+    type: [String],
+    default: [],
+  },
   playlist: {
     type: [String],
     default: [],

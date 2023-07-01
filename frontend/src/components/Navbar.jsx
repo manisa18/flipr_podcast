@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
@@ -71,11 +71,17 @@ const Dropdown = styled.div`
   z-index: 1;
 `;
 
-const Navbar = ({ setSearchResult }) => {
+const Navbar = ({ setSearchResult, isSearchBarOpen, setIsSearchBarOpen }) => {
   const navigate = useNavigate();
   const auth = localStorage.getItem("user");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [keywords, setKeywords] = useState("");
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (isSearchBarOpen) {
+      inputRef.current.focus();
+    }
+  }, [isSearchBarOpen]);
 
   const handleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -99,6 +105,7 @@ const Navbar = ({ setSearchResult }) => {
       );
       const data = response.data.podcasts;
       setSearchResult(data);
+      setIsSearchBarOpen(false);
     } catch (error) {
       console.error("Error fetching search results:", error);
     }
@@ -109,15 +116,15 @@ const Navbar = ({ setSearchResult }) => {
       <Wrapper>
         <Search>
           <Input
+            ref={inputRef}
             placeholder="Search"
             value={keywords}
             onChange={(e) => setKeywords(e.target.value)}
           />
 
           <Button
-            onClick={handleSearchClick}
-            style={{ backgroundColor: "transparent", border: "none" }}
-          >
+            onClick={handleSearchClick || isSearchBarOpen}
+            style={{ backgroundColor: "transparent", border: "none" }}>
             <SearchIcon />
           </Button>
         </Search>
@@ -128,14 +135,12 @@ const Navbar = ({ setSearchResult }) => {
                 bgcolor: "#ffff",
                 width: 30,
                 height: 30,
-                cursor: "pointer"
+                cursor: "pointer",
               }}
-              onClick={handleDropdown}
-            >
+              onClick={handleDropdown}>
               <Typography
                 variant="subtitle1"
-                sx={{ color: "#282c3c", fontSize: 20 }}
-              >
+                sx={{ color: "#282c3c", fontSize: 20 }}>
                 {JSON.parse(auth).data.user.name[0].toUpperCase()}
               </Typography>
             </Avatar>
