@@ -12,6 +12,7 @@ import SignUp from "./pages/SignUp";
 import Settings from "./pages/Settings";
 import SavedPodcast from "./pages/SavedPodcast";
 import MyLibrary from "./pages/MyLibrary";
+import Category from "./pages/Category";
 
 const Container = styled.div`
   display: flex;
@@ -60,6 +61,7 @@ function App() {
                 <Route path="settings" element={<Settings />} />
                 <Route path="savedpodcast" element={<SavedPodcast />} />
                 <Route path="mylibrary" element={<MyLibrary />} />
+                <Route path="categories" element={<Category />} />
               </Routes>
             </Wrapper>
           </Main>
