@@ -75,7 +75,6 @@ const SavedPodcast = () => {
           No Podcasts Uploaded !!!
         </div>
       )}
-      {/* Saved Podcast */}
     </Container>
   );
 };

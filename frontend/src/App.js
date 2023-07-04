@@ -15,6 +15,7 @@ import MyLibrary from "./pages/MyLibrary";
 import Category from "./pages/Category";
 import AddPodcast from "./pages/AddPodcast";
 import MyPodcast from "./pages/MyPodcast";
+import UpdatePodcast from "./pages/UpdatePodcast";
 
 const Container = styled.div`
   display: flex;
@@ -66,6 +67,7 @@ function App() {
                 <Route path="categories" element={<Category />} />
                 <Route path="addpodcast" element={<AddPodcast />} />
                 <Route path="mylibrary/:id" element={<MyPodcast />} />
+                <Route path="mylibrary/:id/edit" element={<UpdatePodcast />} />
               </Routes>
             </Wrapper>
           </Main>
