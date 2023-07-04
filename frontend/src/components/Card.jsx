@@ -60,17 +60,16 @@ const Card = ({ type, product }) => {
     const hours = diffDuration.hours();
 
     if (years > 0) {
-      return `${years} year${years > 1 ? "s" : ""}`;
+      return `${years} year ${years > 1 ? "s" : ""}`;
     } else if (months > 0) {
-      return `${months} month${months > 1 ? "s" : ""}`;
+      return `${months} month ${months > 1 ? "s" : ""}`;
     } else if (days > 0 && hours > 0) {
-      return `${days} day${days > 1 ? "s" : ""} ${hours} hour${
-        hours > 1 ? "s" : ""
+      return `${days} day ${days > 1 ? "s" : ""}
       }`;
     } else if (days > 0) {
-      return `${days} day${days > 1 ? "s" : ""}`;
+      return `${days} day ${days > 1 ? "s" : ""}`;
     } else {
-      return `${hours} hour${hours > 1 ? "s" : ""}`;
+      return `${hours} hour ${hours > 1 ? "s" : ""}`;
     }
   }
   if (!product || !product._id) {
@@ -102,7 +101,8 @@ const Card = ({ type, product }) => {
             <Title>{product.name}</Title>
             {/* <ChannelName>FLIPR</ChannelName> */}
             <Info type={type}>
-              {product.views} views ● {getTimeDifference(product.uploadedDate)}{" "}
+              {product.views} views ● {getTimeDifference(product.uploadedDate)}
+              {" "}
               ago
             </Info>
           </Texts>

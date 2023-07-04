@@ -314,7 +314,7 @@ const Podcast = () => {
         <Title>{podcast.name}</Title>
         <Details>
           <Info>
-            {podcast.views} views ● {getTimeDifference(podcast.uploadedDate)}
+            {podcast.views} views ● {getTimeDifference(podcast.uploadedDate)}{" "}
             ago
           </Info>
           <Buttons>

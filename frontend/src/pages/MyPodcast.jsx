@@ -209,90 +209,91 @@ const MyPodcast = () => {
     }
 
     return (
-        <Container>
-            <Box sx={{ display: 'flex', alignItems: "center", justifyContent: 'space-between' }}>
-                <Box >
-                    <Title2>New Podcast</Title2>
-                </Box>
+      <Container>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}>
+          <Box>
+            <Title2>{podcast.name}</Title2>
+          </Box>
 
-                <Box sx={{ display: 'flex', alignItems: "center", gap: "5px" }}>
-                    <Box>
-                        <Link to="/mylibrary" style={{ textDecoration: 'none', color: 'inherit' }}>
-                            <Button variant="contained">Update</Button>
-                        </Link>
-
-                    </Box>
-                    <Box>
-                        <Link to="/mylibrary" style={{ textDecoration: 'none', color: 'inherit' }}>
-                            <Button variant="contained">Delete</Button>
-                        </Link>
-
-                    </Box>
-
-
-                </Box>
-
+          <Box sx={{ display: "flex", alignItems: "center", gap: "5px" }}>
+            <Box>
+              <Link
+                to="/mylibrary/:id/edit"
+                style={{ textDecoration: "none", color: "inherit" }}>
+                <Button variant="contained">Update</Button>
+              </Link>
             </Box>
-            <hr />
-            <Content>
-                <PodcastWrapper>
-                    <iframe
-                        width="100%"
-                        height="350"
-                        src={podcast.file}
-                        title={podcast.name}
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen></iframe>
-                </PodcastWrapper>
-                <Title>{podcast.name}</Title>
-                <Details>
-                    <Info>
-                        {podcast.views} views ● {getTimeDifference(podcast.uploadedDate)}
-                        ago
-                    </Info>
+            <Box>
+              <Link
+                to="/mylibrary"
+                style={{ textDecoration: "none", color: "inherit" }}>
+                <Button variant="contained">Delete</Button>
+              </Link>
+            </Box>
+          </Box>
+        </Box>
+        <hr />
+        <Content>
+          <PodcastWrapper>
+            <iframe
+              width="100%"
+              height="350"
+              src={podcast.file}
+              title={podcast.name}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen></iframe>
+          </PodcastWrapper>
+          <Title>{podcast.name}</Title>
+          <Details>
+            <Info>
+              {podcast.views} views ● {getTimeDifference(podcast.uploadedDate)}
+              ago
+            </Info>
+          </Details>
+          <Hr />
+          <Channel>
+            <ChannelInfo>
+              <Avatar
+                sx={{
+                  bgcolor: "#ffff",
+                  width: 50,
+                  height: 50,
+                }}>
+                <Typography
+                  variant="subtitle1"
+                  sx={{ color: "#282c3c", fontSize: 30 }}>
+                  {podcast.speaker[0].toUpperCase()}
+                </Typography>
+              </Avatar>
+              <ChannelDetail>
+                <ChannelName>{podcast.speaker}</ChannelName>
+              </ChannelDetail>
+            </ChannelInfo>
+          </Channel>
+          <Hr />
 
-                </Details>
-                <Hr />
-                <Channel>
-                    <ChannelInfo>
-                        <Avatar
-                            sx={{
-                                bgcolor: "#ffff",
-                                width: 50,
-                                height: 50,
-                            }}>
-                            <Typography
-                                variant="subtitle1"
-                                sx={{ color: "#282c3c", fontSize: 30 }}>
-                                {podcast.speaker[0].toUpperCase()}
-                            </Typography>
-                        </Avatar>
-                        <ChannelDetail>
-                            <ChannelName>{podcast.speaker}</ChannelName>
-                        </ChannelDetail>
-                    </ChannelInfo>
-
-                </Channel>
-                <Hr />
-
-                {podcast.description && (
-                    <Description>
-                        {showFullDescription
-                            ? podcast.description
-                            : podcast.description.split(" ").slice(0, 30).join(" ")}
-                        {podcast.description.split(" ").length > 30 && (
-                            <span>
-                                <ToggleBtn onClick={toggleDescription}>
-                                    {showFullDescription ? "...Less" : "...More"}
-                                </ToggleBtn>
-                            </span>
-                        )}
-                    </Description>
-                )}
-            </Content>
-
-        </Container>
+          {podcast.description && (
+            <Description>
+              {showFullDescription
+                ? podcast.description
+                : podcast.description.split(" ").slice(0, 30).join(" ")}
+              {podcast.description.split(" ").length > 30 && (
+                <span>
+                  <ToggleBtn onClick={toggleDescription}>
+                    {showFullDescription ? "...Less" : "...More"}
+                  </ToggleBtn>
+                </span>
+              )}
+            </Description>
+          )}
+        </Content>
+      </Container>
     );
 };
 
