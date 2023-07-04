@@ -13,6 +13,8 @@ import Settings from "./pages/Settings";
 import SavedPodcast from "./pages/SavedPodcast";
 import MyLibrary from "./pages/MyLibrary";
 import Category from "./pages/Category";
+import AddPodcast from "./pages/AddPodcast";
+import MyPodcast from "./pages/MyPodcast";
 
 const Container = styled.div`
   display: flex;
@@ -62,6 +64,8 @@ function App() {
                 <Route path="savedpodcast" element={<SavedPodcast />} />
                 <Route path="mylibrary" element={<MyLibrary />} />
                 <Route path="categories" element={<Category />} />
+                <Route path="addpodcast" element={<AddPodcast />} />
+                <Route path="mylibrary/:id" element={<MyPodcast />} />
               </Routes>
             </Wrapper>
           </Main>
