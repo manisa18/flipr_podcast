@@ -7,6 +7,7 @@ const Container = styled.div`
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
+  height: auto;
 `;
 const Home = ({ searchResult }) => {
   const [podcast, setPodcast] = useState([]);

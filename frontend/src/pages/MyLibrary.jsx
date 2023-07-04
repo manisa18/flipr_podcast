@@ -1,7 +1,19 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Container } from "@mui/material";
-import Card from "../components/Card";
+import { Box,Button, Container } from "@mui/material";
+import { Link } from "react-router-dom";
+import styled from "styled-components";
+import MyCard from "../components/MyCard";
+
+const Title = styled.h1`
+  color: ${({ theme }) => theme.text};
+`;
+
+const Hr = styled.hr`
+  margin: 15px 0px;
+  border: 0.5px solid ${({ theme }) => theme.hr};
+`;
+
 const SavedPodcast = () => {
   const [podcast, setPodcast] = useState([]);
 
@@ -40,15 +52,27 @@ const SavedPodcast = () => {
 
   return (
     <Container>
+      <Box style={{display:"flex",alignItems:"center", justifyContent: "space-between"}}>
+        <Box >
+          <Title>My Library</Title>
+          </Box>
+        
+        <Box>
+        <Link to="/addpodcast" style={{ textDecoration: "none", color: "inherit" }}>
+          <Button variant="contained" >New</Button>
+          </Link>
+        </Box>
+      </Box>
+      <hr/>
       {podcast.length > 0 ? (
         podcast.map((product) => (
           <div key={product.id}>
-            <Card product={product} />
+            <MyCard product={product} />
           </div>
         ))
       ) : (
         <div style={{ color: "#fff", fontSize: "20px" }}>
-          No Saved Podcast Found !!!
+          No Podcasts Uploaded !!!
         </div>
       )}
       {/* Saved Podcast */}
