@@ -4,10 +4,19 @@ const ErrorHander = require("../utils/errorhandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ApiFeatures = require("../utils/apifeatures");
 
-exports.createPodcast = catchAsyncErrors(async (req, res, next) => {
-  const podcast = await Podcast.create({ user: req.user.id, ...req.body });
+const admin = require("firebase-admin");
+const serviceAccount = require("../config/serviceAccount.json");
 
-  await User.findByIdAndUpdate(req.user.id, {
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: "podcast-f4c97.appspot.com",
+});
+
+exports.createPodcast = catchAsyncErrors(async (req, res, next) => {
+  const userId = req.body.userId;
+  const podcast = await Podcast.create({ user: userId, ...req.body });
+
+  await User.findByIdAndUpdate(userId, {
     $push: { playlist: podcast._id },
   });
   res.status(201).json({
@@ -45,6 +54,19 @@ exports.getPodcastDetails = catchAsyncErrors(async (req, res, next) => {
     podcast,
   });
 });
+exports.getPodcastSavedDetails = catchAsyncErrors(async (req, res, next) => {
+  const podcast = await Podcast.findById(req.params.id);
+  const userId = req.query.userId; // Assuming you're using a middleware to authenticate the user and set it in req.user
+  console.log(userId);
+  if (!podcast) {
+    return next(new ErrorHander("Podcast not found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    podcast,
+  });
+});
 
 exports.updatePodcast = catchAsyncErrors(async (req, res, next) => {
   const podcast = await Podcast.findById(req.params.id);
@@ -52,11 +74,12 @@ exports.updatePodcast = catchAsyncErrors(async (req, res, next) => {
   if (!podcast) {
     return next(new ErrorHander("Podcast not found", 404));
   }
-  if (req.user.id == podcast.user) {
+  const userId = req.body.userId;
+  if (userId == podcast.user) {
     const updatePodcast = await Podcast.findByIdAndUpdate(
       req.params.id,
       {
-        $set: req.body,
+        $set: req.body.newData,
       },
       {
         new: true,
@@ -73,13 +96,16 @@ exports.updatePodcast = catchAsyncErrors(async (req, res, next) => {
 
 exports.deletePodcast = catchAsyncErrors(async (req, res, next) => {
   const podcast = await Podcast.findById(req.params.id);
+  const userId = req.body.userId;
 
   if (!podcast) {
     return next(new ErrorHander("Podcast not found", 404));
   }
-
-  if (req.user.id == podcast.user) {
+  if (userId == podcast.user) {
     const deletePodcast = await Podcast.findByIdAndDelete(req.params.id);
+    await User.findByIdAndUpdate(userId, {
+      $pull: { playlist: podcast._id },
+    });
     res.status(200).json({
       success: true,
       deletePodcast,

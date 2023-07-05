@@ -11,8 +11,7 @@ const {
   likedContent,
   dislikedContent,
   savedPodcast,
-  getAllSavedPodcast,
-  groupPodcastsByCategory,
+  getPodcastSavedDetails,
 } = require("../controllers/podcastController");
 const { isAuthenticatedUser } = require("../middleware/auth");
 const router = express.Router();
@@ -26,6 +25,7 @@ router
   .put(isAuthenticatedUser, updatePodcast)
   .delete(isAuthenticatedUser, deletePodcast);
 
+router.route("/library/:id").get(isAuthenticatedUser, getPodcastSavedDetails);
 router.route("/view/:id").put(isAuthenticatedUser, addView);
 router.route("/random/view").get(random);
 router.route("/trend/view").get(trend);
