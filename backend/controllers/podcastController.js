@@ -45,6 +45,19 @@ exports.getPodcastDetails = catchAsyncErrors(async (req, res, next) => {
     podcast,
   });
 });
+exports.getPodcastSavedDetails = catchAsyncErrors(async (req, res, next) => {
+  const podcast = await Podcast.findById(req.params.id);
+  const userId = req.query.userId; // Assuming you're using a middleware to authenticate the user and set it in req.user
+  console.log(userId);
+  if (!podcast) {
+    return next(new ErrorHander("Podcast not found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    podcast,
+  });
+});
 
 exports.updatePodcast = catchAsyncErrors(async (req, res, next) => {
   const podcast = await Podcast.findById(req.params.id);
@@ -52,11 +65,12 @@ exports.updatePodcast = catchAsyncErrors(async (req, res, next) => {
   if (!podcast) {
     return next(new ErrorHander("Podcast not found", 404));
   }
-  if (req.user.id == podcast.user) {
+  const userId = req.body.userId;
+  if (userId == podcast.user) {
     const updatePodcast = await Podcast.findByIdAndUpdate(
       req.params.id,
       {
-        $set: req.body,
+        $set: req.body.newData,
       },
       {
         new: true,
@@ -73,13 +87,16 @@ exports.updatePodcast = catchAsyncErrors(async (req, res, next) => {
 
 exports.deletePodcast = catchAsyncErrors(async (req, res, next) => {
   const podcast = await Podcast.findById(req.params.id);
+  const userId = req.body.userId;
 
   if (!podcast) {
     return next(new ErrorHander("Podcast not found", 404));
   }
-
-  if (req.user.id == podcast.user) {
+  if (userId == podcast.user) {
     const deletePodcast = await Podcast.findByIdAndDelete(req.params.id);
+    await User.findByIdAndUpdate(userId, {
+      $pull: { playlist: podcast._id },
+    });
     res.status(200).json({
       success: true,
       deletePodcast,

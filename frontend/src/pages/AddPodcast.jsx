@@ -1,90 +1,196 @@
-import React, { useState } from 'react';
-import { Box, Button, Container, TextField, FormControl, InputLabel, Select, MenuItem, RadioGroup, FormControlLabel, Radio } from '@mui/material';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  Container,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from "@mui/material";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
-
+import axios from "axios";
 const Title = styled.h1`
   color: ${({ theme }) => theme.text};
 `;
 
 const AddPodcast = () => {
-    const [thumbnail, setThumbnail] = useState(null);
+  const [thumbnail, setThumbnail] = useState(null);
   const [file, setFile] = useState(null);
-  
-  const handleThumbnailChange = (event) => {
-    const selectedThumbnail = event.target.files[0];
+  const [podcast, setPodcast] = useState({
+    name: "",
+    category: "",
+    speaker: "",
+    type: "video",
+    description: "",
+  });
+
+  const handleThumbnailChange = (e) => {
+    const selectedThumbnail = e.target.files[0];
     setThumbnail(selectedThumbnail);
   };
 
-  const handleFileChange = (event) => {
-    const selectedFile = event.target.files[0];
-    setFile(selectedFile);
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(URL.createObjectURL(e.target.files[0]));
   };
 
+  const handleInputs = (e) => {
+    const { name, value } = e.target;
+    setPodcast((prevPodcast) => ({ ...prevPodcast, [name]: value }));
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+            const auth = localStorage.getItem("user");
+            const userId = JSON.parse(auth).data.user._id;
+      console.log(podcast);
+      console.log(thumbnail);
+      console.log(file);
+
+      const response = await axios.post(
+        "http://localhost:8000/api/podcast",
+        {
+          userId,
+          name: podcast.name,
+          description: podcast.description,
+          category: podcast.category,
+          type: podcast.type,
+          speaker: podcast.speaker,
+          img: thumbnail,
+          files: file,
+        },{ withCredentials: true },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(response);
+    } catch (err) {
+      // Handle error response
+      if (err.response) {
+        const errorMessage = err.response.data.message;
+        console.log(errorMessage);
+        // Display error message to the user or handle it as needed
+      } else {
+        console.log(err.message);
+      }
+    }
+  };
   return (
     <Container>
-      <Box sx={{ display: 'flex', alignItems:"center", justifyContent: 'space-between' }}>
-        <Box >
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}>
+        <Box>
           <Title>New Podcast</Title>
         </Box>
 
         <Box>
-          <Link to="/mylibrary" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <Button variant="contained">Upload</Button>
-          </Link>
+          {/* <Link
+            to="/mylibrary"
+            style={{ textDecoration: "none", color: "inherit" }}> */}
+          <Button variant="contained" onClick={handleSubmit}>
+            Upload
+          </Button>
+          {/* </Link> */}
         </Box>
       </Box>
       <hr />
 
-      <TextField label="Name" fullWidth margin="normal" />
-      
+      <TextField
+        label="Name"
+        fullWidth
+        margin="normal"
+        name="name"
+        value={podcast.name}
+        onChange={handleInputs}
+      />
+
       <FormControl fullWidth margin="normal">
         <InputLabel id="category-label">Category</InputLabel>
         <Select
           labelId="category-label"
           label="Category"
           defaultValue=""
-        >
-          <MenuItem value="music">Music</MenuItem>
-          <MenuItem value="sports">Sports</MenuItem>
-          <MenuItem value="news">News</MenuItem>
-          <MenuItem value="education">Education</MenuItem>
-          <MenuItem value="technology">Technology</MenuItem>
-          <MenuItem value="others">Others</MenuItem>
+          name="category"
+          value={podcast.category}
+          onChange={handleInputs}>
+          <MenuItem value="Music">Music</MenuItem>
+          <MenuItem value="Sports">Sports</MenuItem>
+          <MenuItem value="News">News</MenuItem>
+          <MenuItem value="Education">Education</MenuItem>
+          <MenuItem value="Technology">Technology</MenuItem>
+          <MenuItem value="Others">Others</MenuItem>
         </Select>
       </FormControl>
-      <TextField label="Speaker" fullWidth margin="normal" />
-      <Box sx={{display:"flex", alignItems:"center", justifyContent: "space-between", flexDirection:{sm:"column", md:"row"}}}>
-      <FormControl component="fieldset" margin="normal">
-        <RadioGroup row aria-label="type" defaultValue="video">
-        <FormControlLabel value="video" control={<Radio />} label="Video" />
-          <FormControlLabel value="audio" control={<Radio />} label="Audio" />
-          
-        </RadioGroup>
-      </FormControl>
-      
-<Box sx={{display: "flex", gap:"5px"}}>
-<Button variant="contained" component="label" htmlFor="thumbnail-upload" margin="normal">
-        Thumbnail Upload
-        <input
-          accept=".jpg,.jpeg,.png"
-          id="thumbnail-upload"
-          type="file"
-          style={{ display: 'none' }}
-          onChange={handleThumbnailChange}
-        />
-      </Button >
-      <Button variant="contained" component="label" htmlFor="file-upload" margin="normal">
-        File Upload
-        <input
-          accept=".mp4,.mov,.wmv,.avi,.mkv,.webm,.mp3,.wav,.aac,.wma,.m4a,.m4v,.mpg,.mpeg"
-          id="file-upload"
-          type="file"
-          style={{ display: 'none' }}
-          onChange={handleFileChange}
-        />
-      </Button>
-      </Box>
+      <TextField
+        label="Speaker"
+        fullWidth
+        margin="normal"
+        name="speaker"
+        value={podcast.speaker}
+        onChange={handleInputs}
+      />
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexDirection: { sm: "column", md: "row" },
+        }}>
+        <FormControl component="fieldset" margin="normal">
+          <RadioGroup
+            row
+            aria-label="type"
+            defaultValue="video"
+            name="type"
+            value={podcast.type}
+            onChange={handleInputs}>
+            <FormControlLabel value="video" control={<Radio />} label="Video" />
+            <FormControlLabel value="audio" control={<Radio />} label="Audio" />
+          </RadioGroup>
+        </FormControl>
+
+        <Box sx={{ display: "flex", gap: "5px" }}>
+          <Button
+            variant="contained"
+            component="label"
+            htmlFor="thumbnail-upload"
+            margin="normal">
+            Thumbnail Upload
+            <input
+              accept=".jpg,.jpeg,.png"
+              id="thumbnail-upload"
+              type="file"
+              style={{ display: "none" }}
+              onChange={handleThumbnailChange}
+            />
+          </Button>
+          <Button
+            variant="contained"
+            component="label"
+            htmlFor="file-upload"
+            margin="normal">
+            File Upload
+            <input
+              accept=".mp4,.mov,.wmv,.avi,.mkv,.webm,.mp3,.wav,.aac,.wma,.m4a,.m4v,.mpg,.mpeg"
+              id="file-upload"
+              type="file"
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+          </Button>
+        </Box>
       </Box>
       <TextField
         label="Description"
@@ -92,8 +198,10 @@ const AddPodcast = () => {
         margin="normal"
         multiline
         rows={4}
+        name="description"
+        value={podcast.description}
+        onChange={handleInputs}
       />
-    
     </Container>
   );
 };

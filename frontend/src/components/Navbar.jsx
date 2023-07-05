@@ -10,6 +10,7 @@ const Container = styled.div`
   top: 0;
   background-color: ${({ theme }) => theme.navbar};
   height: 50px;
+  z-index: 2;
 `;
 
 const Wrapper = styled.div`
