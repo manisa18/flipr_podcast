@@ -124,12 +124,12 @@ const UpdatePodcast = () => {
           value={podcast.category}
           name="category"
           onChange={handleInputs}>
-          <MenuItem value="music">Music</MenuItem>
-          <MenuItem value="sports">Sports</MenuItem>
-          <MenuItem value="news">News</MenuItem>
-          <MenuItem value="education">Education</MenuItem>
-          <MenuItem value="technology">Technology</MenuItem>
-          <MenuItem value="others">Others</MenuItem>
+          <MenuItem value="Music">Music</MenuItem>
+          <MenuItem value="Sports">Sports</MenuItem>
+          <MenuItem value="News">News</MenuItem>
+          <MenuItem value="Education">Education</MenuItem>
+          <MenuItem value="Technology">Technology</MenuItem>
+          <MenuItem value="Other">Others</MenuItem>
         </Select>
       </FormControl>
       <TextField

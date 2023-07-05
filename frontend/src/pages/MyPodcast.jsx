@@ -127,14 +127,13 @@ const MyPodcast = () => {
       const auth = localStorage.getItem("user");
       const userId = JSON.parse(auth).data.user._id;
 
-          const config = {
-            data: { userId }, // Pass the userId in the request body
-            withCredentials: true,
-          };
+      const config = {
+        data: { userId }, // Pass the userId in the request body
+        withCredentials: true,
+      };
       await axios.delete(
         `http://localhost:8000/api/podcast/${id}`,
-        
-          
+
         config
       );
       navigate("/mylibrary");
@@ -143,28 +142,26 @@ const MyPodcast = () => {
     }
   };
 
-  function getTimeDifference(uploadedDate) {
-    const currentTime = moment();
-    const diffDuration = moment.duration(currentTime.diff(uploadedDate));
-    const years = diffDuration.years();
-    const months = diffDuration.months();
-    const days = diffDuration.days();
-    const hours = diffDuration.hours();
+   function getTimeDifference(uploadedDate) {
+     const currentTime = moment();
+     const diffDuration = moment.duration(currentTime.diff(uploadedDate));
+     const years = diffDuration.years();
+     const months = diffDuration.months();
+     const days = diffDuration.days();
+     const hours = diffDuration.hours();
 
-    if (years > 0) {
-      return `${years} year${years > 1 ? "s" : ""}`;
-    } else if (months > 0) {
-      return `${months} month${months > 1 ? "s" : ""}`;
-    } else if (days > 0 && hours > 0) {
-      return `${days} day${days > 1 ? "s" : ""} ${hours} hour${
-        hours > 1 ? "s" : ""
-      }`;
-    } else if (days > 0) {
-      return `${days} day${days > 1 ? "s" : ""}`;
-    } else {
-      return `${hours} hour${hours > 1 ? "s" : ""}`;
-    }
-  }
+     if (years > 0) {
+       return `${years} year${years > 1 ? "s " : ""}`;
+     } else if (months > 0) {
+       return `${months} month${months > 1 ? "s " : ""}`;
+     } else if (days > 0 && hours > 0) {
+       return `${days} day${days > 1 ? "s " : ""}`;
+     } else if (days > 0) {
+       return `${days} day${days > 1 ? "s " : ""}`;
+     } else {
+       return `${hours} hour${hours > 1 ? "s " : ""}`;
+     }
+   }
 
   if (!podcast) {
     return <div>Loading...</div>;
@@ -200,14 +197,60 @@ const MyPodcast = () => {
       <hr />
       <Content>
         <PodcastWrapper>
-          <iframe
-            width="100%"
-            height="350"
-            src={podcast.file}
-            title={podcast.name}
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen></iframe>
+          <div>
+            {podcast.type !== "video" ? (
+              <div
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  height: "350px",
+                  overflow: "hidden",
+                }}>
+                <audio
+                  autoPlay
+                  controls
+                  controlsList="nodownload"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    position: "absolute",
+                    top: 0,
+                    backgroundColor: "transparent",
+                    borderRadius: 0, 
+                  }}>
+                  <source src={podcast.file} type="audio/mpeg" />
+                  Your browser does not support the audio element.
+                </audio>
+                <img
+                  src={podcast.img}
+                  alt={podcast.name}
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </div>
+            ) : (
+              <div
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  height: "350px",
+                }}>
+                <video
+                  autoPlay
+                  controls
+                  controlsList="nodownload"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    position: "absolute",
+                    top: 0,
+                    backgroundColor: "black",
+                  }}>
+                  <source src={podcast.file} type="video/mp4" />
+                  Your browser does not support the video element.
+                </video>
+              </div>
+            )}
+          </div>
         </PodcastWrapper>
         <Title>{podcast.name}</Title>
         <Details>

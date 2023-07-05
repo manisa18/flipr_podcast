@@ -12,14 +12,16 @@ import {
   FormControlLabel,
   Radio,
 } from "@mui/material";
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
+import storage from "../firebase.jsx";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { useNavigate } from "react-router-dom";
 const Title = styled.h1`
   color: ${({ theme }) => theme.text};
 `;
-
 const AddPodcast = () => {
+  const navigate = useNavigate();
   const [thumbnail, setThumbnail] = useState(null);
   const [file, setFile] = useState(null);
   const [podcast, setPodcast] = useState({
@@ -37,7 +39,7 @@ const AddPodcast = () => {
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    setFile(URL.createObjectURL(e.target.files[0]));
+    setFile(selectedFile);
   };
 
   const handleInputs = (e) => {
@@ -47,12 +49,23 @@ const AddPodcast = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-            const auth = localStorage.getItem("user");
-            const userId = JSON.parse(auth).data.user._id;
-      console.log(podcast);
-      console.log(thumbnail);
-      console.log(file);
+      const auth = localStorage.getItem("user");
+      const userId = JSON.parse(auth).data.user._id;
 
+      const thumbnailRef = ref(storage, `thumbnails/${thumbnail.name}`);
+      const thumbnailUploadTask = uploadBytesResumable(thumbnailRef, thumbnail);
+      await thumbnailUploadTask;
+
+      const fileRef = ref(storage, `files/${file.name}`);
+      const fileUploadTask = uploadBytesResumable(fileRef, file);
+      await fileUploadTask;
+
+      const thumbnailUrl = await getDownloadURL(thumbnailRef);
+      const fileUrl = await getDownloadURL(fileRef);
+
+      console.log(podcast);
+      console.log(thumbnailUrl);
+      console.log(fileUrl);
       const response = await axios.post(
         "http://localhost:8000/api/podcast",
         {
@@ -62,9 +75,10 @@ const AddPodcast = () => {
           category: podcast.category,
           type: podcast.type,
           speaker: podcast.speaker,
-          img: thumbnail,
-          files: file,
-        },{ withCredentials: true },
+          img: thumbnailUrl,
+          file: fileUrl,
+        },
+        { withCredentials: true },
         {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -72,6 +86,7 @@ const AddPodcast = () => {
         }
       );
       console.log(response);
+      navigate("/mylibrary");
     } catch (err) {
       // Handle error response
       if (err.response) {
@@ -130,7 +145,7 @@ const AddPodcast = () => {
           <MenuItem value="News">News</MenuItem>
           <MenuItem value="Education">Education</MenuItem>
           <MenuItem value="Technology">Technology</MenuItem>
-          <MenuItem value="Others">Others</MenuItem>
+          <MenuItem value="Other">Others</MenuItem>
         </Select>
       </FormControl>
       <TextField

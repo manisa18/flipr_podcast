@@ -280,17 +280,15 @@ const Podcast = () => {
     const hours = diffDuration.hours();
 
     if (years > 0) {
-      return `${years} year${years > 1 ? "s" : ""}`;
+      return `${years} year${years > 1 ? "s " : ""}`;
     } else if (months > 0) {
-      return `${months} month${months > 1 ? "s" : ""}`;
+      return `${months} month${months > 1 ? "s " : ""}`;
     } else if (days > 0 && hours > 0) {
-      return `${days} day${days > 1 ? "s" : ""} ${hours} hour${
-        hours > 1 ? "s" : ""
-      }`;
+      return `${days} day${days > 1 ? "s " : ""}`;
     } else if (days > 0) {
-      return `${days} day${days > 1 ? "s" : ""}`;
+      return `${days} day${days > 1 ? "s " : ""}`;
     } else {
-      return `${hours} hour${hours > 1 ? "s" : ""}`;
+      return `${hours} hour${hours > 1 ? "s " : ""}`;
     }
   }
 
@@ -302,14 +300,44 @@ const Podcast = () => {
     <Container>
       <Content>
         <PodcastWrapper>
-          <iframe
-            width="100%"
-            height="350"
-            src={podcast.file}
-            title={podcast.name}
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen></iframe>
+          <div>
+            {podcast.type !== "video" ? (
+              <div
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  height: "350px",
+                }}>
+                <audio
+                  controls
+                  autoPlay
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    position: "absolute",
+                    top: 0,
+                    backgroundColor: "transparent",
+                  }}>
+                  <source src={podcast.file} type="audio/mpeg" />
+                  Your browser does not support the audio element.
+                </audio>
+                <img
+                  src={podcast.img}
+                  alt={podcast.name}
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </div>
+            ) : (
+              <iframe
+                width="100%"
+                height="350"
+                src={podcast.file}
+                title={podcast.name}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen></iframe>
+            )}
+          </div>
         </PodcastWrapper>
         <Title>{podcast.name}</Title>
         <Details>

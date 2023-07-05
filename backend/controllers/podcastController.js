@@ -4,10 +4,19 @@ const ErrorHander = require("../utils/errorhandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ApiFeatures = require("../utils/apifeatures");
 
-exports.createPodcast = catchAsyncErrors(async (req, res, next) => {
-  const podcast = await Podcast.create({ user: req.user.id, ...req.body });
+const admin = require("firebase-admin");
+const serviceAccount = require("../config/serviceAccount.json");
 
-  await User.findByIdAndUpdate(req.user.id, {
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: "podcast-f4c97.appspot.com",
+});
+
+exports.createPodcast = catchAsyncErrors(async (req, res, next) => {
+  const userId = req.body.userId;
+  const podcast = await Podcast.create({ user: userId, ...req.body });
+
+  await User.findByIdAndUpdate(userId, {
     $push: { playlist: podcast._id },
   });
   res.status(201).json({
