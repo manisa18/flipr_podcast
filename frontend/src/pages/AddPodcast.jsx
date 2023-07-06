@@ -25,6 +25,10 @@ import { useNavigate } from "react-router-dom";
 const Title = styled.h1`
   color: ${({ theme }) => theme.text};
 `;
+const Hr = styled.hr`
+  margin: 10px 0px 20px 0px;
+  border: 1px solid ${({ theme }) => theme.hr};
+`;
 const AddPodcast = () => {
   const navigate = useNavigate();
   const [thumbnail, setThumbnail] = useState(null);
@@ -137,7 +141,7 @@ const AddPodcast = () => {
           {/* </Link> */}
         </Box>
       </Box>
-      <hr />
+      <Hr />
 
       <TextField
         label="Name"
