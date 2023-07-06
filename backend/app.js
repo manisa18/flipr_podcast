@@ -20,7 +20,7 @@ const user = require("./routes/userRoute");
 
 app.use("/api/podcast", podcast);
 app.use("/", auth);
-app.use("/api/v1/profile", user);
+app.use("/profile", user);
 
 // Middleware;
 app.use(errorMiddleware);

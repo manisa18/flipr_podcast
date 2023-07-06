@@ -50,7 +50,7 @@ const Info = styled.div`
   color: ${({ theme }) => theme.textSoft};
 `;
 
-const Card = ({ type, product }) => {
+const MyCard = ({ type, product }) => {
   function getTimeDifference(uploadedDate) {
     const currentTime = moment();
     const diffDuration = moment.duration(currentTime.diff(uploadedDate));
@@ -72,11 +72,11 @@ const Card = ({ type, product }) => {
     }
   }
   if (!product || !product._id) {
-    return null; // or display a placeholder/error message
+    return null;
   }
 
   return (
-    <Link to={`/podcast/${product._id}`} style={{ textDecoration: "none" }}>
+    <Link to={`/mylibrary/${product._id}`} style={{ textDecoration: "none" }}>
       <Container type={type}>
         <Image
           type={type}
@@ -109,4 +109,4 @@ const Card = ({ type, product }) => {
     </Link>
   );
 };
-export default Card;
+export default MyCard;

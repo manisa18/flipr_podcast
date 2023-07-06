@@ -4,15 +4,15 @@ const ErrorHander = require("../utils/errorhandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 
 exports.updateUser = catchAsyncErrors(async (req, res, next) => {
-  if (req.params.id === req.user.id) {
+  const { userId } = req.body;
+  console.log(userId);
+  if (req.params.id === userId) {
     try {
       const newUser = {
-        name: req.body.name,
-        email: req.body.email,
-        gender: req.body.gender,
-        month: req.body.month,
-        date: req.body.date,
-        year: req.body.year,
+        name: req.body.newData.name,
+        email: req.body.newData.email,
+        gender: req.body.newData.gender,
+        dob: req.body.newData.dob,
       };
       const updateUser = await User.findByIdAndUpdate(
         req.params.id,

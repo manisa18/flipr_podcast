@@ -10,6 +10,12 @@ import Podcast from "./pages/Podcast";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Settings from "./pages/Settings";
+import SavedPodcast from "./pages/SavedPodcast";
+import MyLibrary from "./pages/MyLibrary";
+import Category from "./pages/Category";
+import AddPodcast from "./pages/AddPodcast";
+import MyPodcast from "./pages/MyPodcast";
+import UpdatePodcast from "./pages/UpdatePodcast";
 
 const Container = styled.div`
   display: flex;
@@ -25,14 +31,27 @@ const Wrapper = styled.div`
 function App() {
   const [darkMode, setDarkMode] = useState(true);
   const [searchResult, setSearchResult] = useState("");
+  const [isSearchBarOpen, setIsSearchBarOpen] = useState(false);
+
+  const handleSearchMenu = () => {
+    setIsSearchBarOpen(!isSearchBarOpen);
+  };
 
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <Container>
         <BrowserRouter>
-          <Menu darkMode={darkMode} setDarkMode={setDarkMode} />
+          <Menu
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
+            handleSearchMenu={handleSearchMenu}
+          />
           <Main>
-            <Navbar setSearchResult={setSearchResult} />
+            <Navbar
+              setSearchResult={setSearchResult}
+              isSearchBarOpen={isSearchBarOpen}
+              setIsSearchBarOpen={setIsSearchBarOpen}
+            />
             <Wrapper>
               <Routes>
                 <Route
@@ -43,6 +62,12 @@ function App() {
                 <Route path="signup" element={<SignUp />} />
                 <Route path="podcast/:id" element={<Podcast />} />
                 <Route path="settings" element={<Settings />} />
+                <Route path="savedpodcast" element={<SavedPodcast />} />
+                <Route path="mylibrary" element={<MyLibrary />} />
+                <Route path="categories" element={<Category />} />
+                <Route path="addpodcast" element={<AddPodcast />} />
+                <Route path="mylibrary/:id" element={<MyPodcast />} />
+                <Route path="mylibrary/:id/edit" element={<UpdatePodcast />} />
               </Routes>
             </Wrapper>
           </Main>

@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import moment from "moment";
+
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
-import ShareIcon from "@mui/icons-material/Share";
+// import ShareIcon from "@mui/icons-material/Share";
+import LibraryAddOutlinedIcon from "@mui/icons-material/LibraryAddOutlined";
 import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
 import Card from "../components/Card";
 import Avatar from "@mui/material/Avatar";
@@ -75,6 +78,7 @@ const ChannelName = styled.span`
 `;
 const Description = styled.p`
   font-size: 14px;
+  color: ${({ theme }) => theme.text};
 `;
 const Subscribe = styled.button`
   background-color: #73bbc9;
@@ -86,7 +90,12 @@ const Subscribe = styled.button`
   padding: 10px 20px;
   cursor: pointer;
 `;
-
+const ToggleBtn = styled.button`
+  color: #73bbc9;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+`;
 const Podcast = () => {
   const { id } = useParams();
   const [podcast, setPodcast] = useState(null);
@@ -94,6 +103,9 @@ const Podcast = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -106,8 +118,12 @@ const Podcast = () => {
         const auth = localStorage.getItem("user");
         const userId = JSON.parse(auth).data.user._id;
         if (userId) {
+          const response = await axios.get(
+            `http://localhost:8000/profile/${userId}`
+          );
           setIsLiked(podcastData.likes.includes(userId));
           setIsDisliked(podcastData.dislikes.includes(userId));
+          setIsSaved(response.data.user.savedPlaylist.includes(id));
         } else {
           console.log("User Not Logged In");
         }
@@ -178,21 +194,22 @@ const Podcast = () => {
       const userId = JSON.parse(auth).data.user._id;
       if (!isLiked) {
         // if (auth) {
-        axios
-          .put(
-            `http://localhost:8000/api/podcast/likes/${id}`,
-            { userId },
-            { withCredentials: true }
-          )
-          .then(() => {
-            setIsLiked(true);
-            if (isDisliked) {
-              setIsDisliked(false);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        axios.put(
+          `http://localhost:8000/api/podcast/likes/${id}`,
+          { userId },
+          { withCredentials: true }
+        );
+        setIsLiked(true);
+        if (isDisliked) {
+          setIsDisliked(false);
+        }
+      } else if (isLiked) {
+        axios.put(
+          `http://localhost:8000/api/podcast/likes/${id}`,
+          { userId },
+          { withCredentials: true }
+        );
+        setIsLiked(false);
       }
     } else {
       console.log("User First Log In");
@@ -204,26 +221,77 @@ const Podcast = () => {
       const userId = JSON.parse(auth).data.user._id;
       console.log(userId);
       if (!isDisliked) {
-        axios
-          .put(
-            `http://localhost:8000/api/podcast/dislikes/${id}`,
-            { userId },
-            { withCredentials: true }
-          )
-          .then(() => {
-            setIsDisliked(true);
-            if (isLiked) {
-              setIsLiked(false);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        axios.put(
+          `http://localhost:8000/api/podcast/dislikes/${id}`,
+          { userId },
+          { withCredentials: true }
+        );
+        setIsDisliked(true);
+        if (isLiked) {
+          setIsLiked(false);
+        }
+      } else if (isDisliked) {
+        axios.put(
+          `http://localhost:8000/api/podcast/dislikes/${id}`,
+          { userId },
+          { withCredentials: true }
+        );
+        setIsDisliked(false);
       }
     } else {
       console.log("User First Log In");
     }
   };
+
+  const handleSave = async () => {
+    const auth = localStorage.getItem("user");
+    if (auth) {
+      const userId = JSON.parse(auth).data.user._id;
+      console.log(userId);
+      if (!isSaved) {
+        axios.put(
+          `http://localhost:8000/api/podcast/save/${id}`,
+          { userId },
+          { withCredentials: true }
+        );
+        setIsSaved(true);
+      } else if (isSaved) {
+        axios.put(
+          `http://localhost:8000/api/podcast/save/${id}`,
+          { userId },
+          { withCredentials: true }
+        );
+        setIsSaved(false);
+      }
+    } else {
+      console.log("User First Log In");
+    }
+  };
+  const toggleDescription = () => {
+    setShowFullDescription((prevValue) => !prevValue);
+  };
+
+  function getTimeDifference(uploadedDate) {
+    const currentTime = moment();
+    const diffDuration = moment.duration(currentTime.diff(uploadedDate));
+    const years = diffDuration.years();
+    const months = diffDuration.months();
+    const days = diffDuration.days();
+    const hours = diffDuration.hours();
+
+    if (years > 0) {
+      return `${years} year${years > 1 ? "s " : ""}`;
+    } else if (months > 0) {
+      return `${months} month${months > 1 ? "s " : ""}`;
+    } else if (days > 0 && hours > 0) {
+      return `${days} day${days > 1 ? "s " : ""}`;
+    } else if (days > 0) {
+      return `${days} day${days > 1 ? "s " : ""}`;
+    } else {
+      return `${hours} hour${hours > 1 ? "s " : ""}`;
+    }
+  }
+
   if (!podcast) {
     return <div>Loading...</div>;
   }
@@ -232,18 +300,51 @@ const Podcast = () => {
     <Container>
       <Content>
         <PodcastWrapper>
-          <iframe
-            width="100%"
-            height="350"
-            src={podcast.file}
-            title={podcast.name}
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen></iframe>
+          <div>
+            {podcast.type !== "video" ? (
+              <div
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  height: "350px",
+                }}>
+                <audio
+                  controls
+                  autoPlay
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    position: "absolute",
+                    top: 0,
+                    backgroundColor: "transparent",
+                  }}>
+                  <source src={podcast.file} type="audio/mpeg" />
+                  Your browser does not support the audio element.
+                </audio>
+                <img
+                  src={podcast.img}
+                  alt={podcast.name}
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </div>
+            ) : (
+              <iframe
+                width="100%"
+                height="350"
+                src={podcast.file}
+                title={podcast.name}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen></iframe>
+            )}
+          </div>
         </PodcastWrapper>
         <Title>{podcast.name}</Title>
         <Details>
-          <Info>{podcast.views} ● 1 day ago</Info>
+          <Info>
+            {podcast.views} views ● {getTimeDifference(podcast.uploadedDate)}{" "}
+            ago
+          </Info>
           <Buttons>
             <Button onClick={handleLike}>
               {isLiked ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />}
@@ -253,12 +354,12 @@ const Podcast = () => {
               {isDisliked ? <ThumbDownIcon /> : <ThumbDownOffAltIcon />}
               Dislike
             </Button>
-            <Button>
+            {/* <Button>
               <ShareIcon />
               Share
-            </Button>
-            <Button>
-              <LibraryAddIcon />
+            </Button> */}
+            <Button onClick={handleSave}>
+              {isSaved ? <LibraryAddIcon /> : <LibraryAddOutlinedIcon />}
               Save
             </Button>
           </Buttons>
@@ -280,16 +381,34 @@ const Podcast = () => {
             </Avatar>
             <ChannelDetail>
               <ChannelName>{podcast.speaker}</ChannelName>
-              <Description>{podcast.description}</Description>
             </ChannelDetail>
           </ChannelInfo>
           <Subscribe>SUBSCRIBE</Subscribe>
         </Channel>
+        <Hr />
+
+        {podcast.description && (
+          <Description>
+            {showFullDescription
+              ? podcast.description
+              : podcast.description.split(" ").slice(0, 30).join(" ")}
+            {podcast.description.split(" ").length > 30 && (
+              <span>
+                <ToggleBtn onClick={toggleDescription}>
+                  {showFullDescription ? "...Less" : "...More"}
+                </ToggleBtn>
+              </span>
+            )}
+          </Description>
+        )}
       </Content>
       <Recommendation>
-        {allpodcast.map((product) => (
-          <Card key={product._id} type="sm" product={product} />
-        ))}
+        {allpodcast.map((product) => {
+          if (product._id !== id) {
+            return <Card key={product._id} type="sm" product={product} />;
+          }
+          return null; // Exclude the product with matching id
+        })}
       </Recommendation>
     </Container>
   );

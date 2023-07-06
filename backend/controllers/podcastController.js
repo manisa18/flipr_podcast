@@ -1,10 +1,24 @@
 const Podcast = require("../models/podcastModel");
+const User = require("../models/userModel");
 const ErrorHander = require("../utils/errorhandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ApiFeatures = require("../utils/apifeatures");
 
+const admin = require("firebase-admin");
+const serviceAccount = require("../config/serviceAccount.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: "podcast-f4c97.appspot.com",
+});
+
 exports.createPodcast = catchAsyncErrors(async (req, res, next) => {
-  const podcast = await Podcast.create({ user: req.user.id, ...req.body });
+  const userId = req.body.userId;
+  const podcast = await Podcast.create({ user: userId, ...req.body });
+
+  await User.findByIdAndUpdate(userId, {
+    $push: { playlist: podcast._id },
+  });
   res.status(201).json({
     success: true,
     podcast,
@@ -18,6 +32,7 @@ exports.getAllPodcast = catchAsyncErrors(async (req, res) => {
   const apiFeatures = new ApiFeatures(Podcast.find(), req.query)
     .search()
     .filter()
+    .filterByCategory()
     .pagination(resultPerPage);
   const podcasts = await apiFeatures.query;
   res.status(201).json({
@@ -39,6 +54,19 @@ exports.getPodcastDetails = catchAsyncErrors(async (req, res, next) => {
     podcast,
   });
 });
+exports.getPodcastSavedDetails = catchAsyncErrors(async (req, res, next) => {
+  const podcast = await Podcast.findById(req.params.id);
+  const userId = req.query.userId; // Assuming you're using a middleware to authenticate the user and set it in req.user
+  console.log(userId);
+  if (!podcast) {
+    return next(new ErrorHander("Podcast not found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    podcast,
+  });
+});
 
 exports.updatePodcast = catchAsyncErrors(async (req, res, next) => {
   const podcast = await Podcast.findById(req.params.id);
@@ -46,11 +74,12 @@ exports.updatePodcast = catchAsyncErrors(async (req, res, next) => {
   if (!podcast) {
     return next(new ErrorHander("Podcast not found", 404));
   }
-  if (req.user.id == podcast.user) {
+  const userId = req.body.userId;
+  if (userId == podcast.user) {
     const updatePodcast = await Podcast.findByIdAndUpdate(
       req.params.id,
       {
-        $set: req.body,
+        $set: req.body.newData,
       },
       {
         new: true,
@@ -67,13 +96,16 @@ exports.updatePodcast = catchAsyncErrors(async (req, res, next) => {
 
 exports.deletePodcast = catchAsyncErrors(async (req, res, next) => {
   const podcast = await Podcast.findById(req.params.id);
+  const userId = req.body.userId;
 
   if (!podcast) {
     return next(new ErrorHander("Podcast not found", 404));
   }
-
-  if (req.user.id == podcast.user) {
+  if (userId == podcast.user) {
     const deletePodcast = await Podcast.findByIdAndDelete(req.params.id);
+    await User.findByIdAndUpdate(userId, {
+      $pull: { playlist: podcast._id },
+    });
     res.status(200).json({
       success: true,
       deletePodcast,
@@ -123,15 +155,6 @@ exports.random = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-exports.random = catchAsyncErrors(async (req, res, next) => {
-  try {
-    const randomPodcast = await Podcast.aggregate([{ $sample: { size: 3 } }]);
-    res.status(200).json({ success: true, randomPodcast });
-  } catch (err) {
-    next(err);
-  }
-});
-
 exports.trend = catchAsyncErrors(async (req, res, next) => {
   try {
     const trendPodcast = await Podcast.find().sort({ view: -1 });
@@ -141,29 +164,36 @@ exports.trend = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-exports.likedContent = async (req, res, next) => {
+exports.likedContent = catchAsyncErrors(async (req, res, next) => {
   try {
     const { id } = req.params;
 
     const { userId } = req.body;
-    // const userId = req.user.id;
-    console.log(userId);
 
     const podcast = await Podcast.findById(id);
 
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
     if (!podcast) {
       return res
         .status(404)
         .json({ success: false, message: "Podcast not found" });
     }
 
-    if (!userId) {
-      return res.status(401).json({ message: "User not logged in." });
-    }
     if (!podcast.likes.includes(userId) && !podcast.dislikes.includes(userId)) {
       const likesUpdate = await Podcast.findByIdAndUpdate(id, {
         $push: { likes: userId },
+        $inc: { likesCount: 1 },
       });
+      await User.findByIdAndUpdate(userId, {
+        $push: { likedPodcast: id },
+      });
+
       res.status(200).json({ success: true, likesUpdate });
     } else if (
       !podcast.likes.includes(userId) &&
@@ -171,29 +201,40 @@ exports.likedContent = async (req, res, next) => {
     ) {
       await Podcast.findByIdAndUpdate(id, {
         $pull: { dislikes: userId },
+        $inc: { dislikesCount: -1 },
       });
       const likesUpdate = await Podcast.findByIdAndUpdate(id, {
         $push: { likes: userId },
+        $inc: { likesCount: 1 },
       });
-    } else {
-      if (podcast.likes.includes(userId))
-        res.status(200).json({ success: true, message: "Already Liked" });
-      else if (podcast.dislikes.includes(userId))
-        res.status(200).json({ success: true, message: "Already Disliked" });
-      else res.status(200).json({ success: true, message: "Already Done" });
+      await User.findByIdAndUpdate(userId, {
+        $pull: { dislikedPodcast: id },
+        $push: { likedPodcast: id },
+      });
+      res.status(200).json({ success: true, likesUpdate });
+    } else if (
+      podcast.likes.includes(userId) &&
+      !podcast.dislikes.includes(userId)
+    ) {
+      await Podcast.findByIdAndUpdate(id, {
+        $pull: { likes: userId },
+        $inc: { likesCount: -1 },
+      });
+      await User.findByIdAndUpdate(userId, {
+        $pull: { likedPodcast: id },
+      });
     }
   } catch (err) {
     next(err);
   }
-};
+});
 
-exports.dislikedContent = async (req, res, next) => {
+exports.dislikedContent = catchAsyncErrors(async (req, res, next) => {
   try {
     const { id } = req.params;
 
     const { userId } = req.body;
     // const userId = req.user.id;
-    console.log(userId);
 
     const podcast = await Podcast.findById(id);
 
@@ -203,12 +244,21 @@ exports.dislikedContent = async (req, res, next) => {
         .json({ success: false, message: "Podcast not found" });
     }
 
-    if (!userId) {
-      return res.status(401).json({ message: "User not logged in." });
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
     if (!podcast.likes.includes(userId) && !podcast.dislikes.includes(userId)) {
       const dislikesUpdate = await Podcast.findByIdAndUpdate(id, {
         $push: { dislikes: userId },
+        $inc: { dislikesCount: 1 },
+      });
+
+      await User.findByIdAndUpdate(userId, {
+        $push: { dislikedPodcast: id },
       });
       res.status(200).json({ success: true, dislikesUpdate });
     } else if (
@@ -217,19 +267,67 @@ exports.dislikedContent = async (req, res, next) => {
     ) {
       await Podcast.findByIdAndUpdate(id, {
         $pull: { likes: userId },
+        $inc: { likesCount: -1 },
       });
       const dislikesUpdate = await Podcast.findByIdAndUpdate(id, {
         $push: { dislikes: userId },
+        $inc: { dislikesCount: 1 },
+      });
+      await User.findByIdAndUpdate(userId, {
+        $pull: { likedPodcast: id },
+        $push: { dislikedPodcast: id },
       });
       res.status(200).json({ success: true, dislikesUpdate });
-    } else {
-      if (podcast.likes.includes(userId))
-        res.status(200).json({ success: true, message: "Already Liked" });
-      else if (podcast.dislikes.includes(userId))
-        res.status(200).json({ success: true, message: "Already Disliked" });
-      else res.status(200).json({ success: true, message: "Already Done" });
+    } else if (
+      podcast.dislikes.includes(userId) &&
+      !podcast.likes.includes(userId)
+    ) {
+      await Podcast.findByIdAndUpdate(id, {
+        $pull: { dislikes: userId },
+        $inc: { dislikesCount: -1 },
+      });
+      await User.findByIdAndUpdate(userId, {
+        $pull: { dislikedPodcast: id },
+      });
     }
   } catch (err) {
     next(err);
   }
-};
+});
+
+exports.savedPodcast = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const { userId } = req.body;
+    // const userId = req.user.id;
+
+    const podcast = await Podcast.findById(id);
+
+    if (!podcast) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Podcast not found" });
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    if (!user.savedPlaylist.includes(id)) {
+      await User.findByIdAndUpdate(userId, {
+        $push: { savedPlaylist: id },
+      });
+    } else if (user.savedPlaylist.includes(id)) {
+      await User.findByIdAndUpdate(userId, {
+        $pull: { savedPlaylist: id },
+      });
+    }
+  } catch (err) {
+    next(err);
+  }
+});

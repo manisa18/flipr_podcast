@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import SearchIcon from "@mui/icons-material/Search";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 const Container = styled.div`
   position: sticky;
   top: 0;
   background-color: ${({ theme }) => theme.navbar};
   height: 50px;
+  z-index: 2;
 `;
 
 const Wrapper = styled.div`
@@ -71,11 +72,18 @@ const Dropdown = styled.div`
   z-index: 1;
 `;
 
-const Navbar = ({ setSearchResult }) => {
+const Navbar = ({ setSearchResult, isSearchBarOpen, setIsSearchBarOpen }) => {
+  const location = useLocation();
   const navigate = useNavigate();
   const auth = localStorage.getItem("user");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [keywords, setKeywords] = useState("");
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (isSearchBarOpen) {
+      inputRef.current.focus();
+    }
+  }, [isSearchBarOpen]);
 
   const handleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -99,6 +107,7 @@ const Navbar = ({ setSearchResult }) => {
       );
       const data = response.data.podcasts;
       setSearchResult(data);
+      setIsSearchBarOpen(false);
     } catch (error) {
       console.error("Error fetching search results:", error);
     }
@@ -107,20 +116,24 @@ const Navbar = ({ setSearchResult }) => {
   return (
     <Container>
       <Wrapper>
-        <Search>
-          <Input
-            placeholder="Search"
-            value={keywords}
-            onChange={(e) => setKeywords(e.target.value)}
-          />
+        {location.pathname === "/" ? (
+          <Search>
+            <Input
+              ref={inputRef}
+              placeholder="Search"
+              value={keywords}
+              onChange={(e) => setKeywords(e.target.value)}
+            />
 
-          <Button
-            onClick={handleSearchClick}
-            style={{ backgroundColor: "transparent", border: "none" }}
-          >
-            <SearchIcon />
-          </Button>
-        </Search>
+            <Button
+              onClick={handleSearchClick || isSearchBarOpen}
+              style={{ backgroundColor: "transparent", border: "none" }}>
+              <SearchIcon />
+            </Button>
+          </Search>
+        ) : (
+          <div></div>
+        )}
         {auth ? (
           <div>
             <Avatar
@@ -128,14 +141,12 @@ const Navbar = ({ setSearchResult }) => {
                 bgcolor: "#ffff",
                 width: 30,
                 height: 30,
-                cursor: "pointer"
+                cursor: "pointer",
               }}
-              onClick={handleDropdown}
-            >
+              onClick={handleDropdown}>
               <Typography
                 variant="subtitle1"
-                sx={{ color: "#282c3c", fontSize: 20 }}
-              >
+                sx={{ color: "#282c3c", fontSize: 20 }}>
                 {JSON.parse(auth).data.user.name[0].toUpperCase()}
               </Typography>
             </Avatar>

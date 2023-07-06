@@ -19,48 +19,46 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Please Enter Your Password"],
-    minlength: [8, "Name should have more than 8 characters"],
+    minlength: [8, "Password should have at least 8 characters"],
     select: false,
   },
-  // gender: {
-  //   type: String,
-  //   required: [true, "Please Enter Your Gender"],
-  //   enum: ["male", "female", "non-binary"],
-  // },
-  // month: {
-  //   type: Number,
-  //   required: [true, "Please Enter Month"],
-  // },
-  // date: {
-  //   type: Number,
-  //   required: [true, "Please Enter Date"],
-  // },
-  // year: {
-  //   type: Number,
-  //   required: [true, "Please Enter Your Year"],
-  // },
-  // roles: {
-  //   type: String,
-  //   default: "user",
-  // },
-  // likedPodcast: {
-  //   type: [String],
-  //   default: [],
-  // },
-  // playlist: {
-  //   type: [String],
-  //   default: [],
-  // },
-  // avatar: {
-  //   public_id: {
-  //     type: String,
-  //     required: true,
-  //   },
-  //   url: {
-  //     type: String,
-  //     required: true,
-  //   },
-  // },
+  gender: {
+    type: String,
+    required: [true, "Please Enter Your Gender"],
+    enum: ["male", "female", "non-binary"],
+  },
+  dob: {
+    type: Date,
+    required: [true, "Please Enter Your Date of Birth"],
+  },
+  roles: {
+    type: String,
+    default: "user",
+  },
+  likedPodcast: {
+    type: [String],
+    default: [],
+  },
+  dislikedPodcast: {
+    type: [String],
+    default: [],
+  },
+  savedPlaylist: {
+    type: [String],
+    default: [],
+  },
+  playlist: {
+    type: [String],
+    default: [],
+  },
+  avatar: {
+    public_id: {
+      type: String,
+    },
+    url: {
+      type: String,
+    },
+  },
   fromGoogle: {
     type: Boolean,
     default: false,
@@ -77,10 +75,10 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-userSchema.methods.getJWTToken = function() {
+userSchema.methods.getJWTToken = function () {
   return jwt.sign(
     {
-      id: this._id
+      id: this._id,
     },
     process.env.JWT_SECRET,
     {

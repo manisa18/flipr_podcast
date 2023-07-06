@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import ListenUpLogo from "../img/logo.png";
 import HomeIcon from "@mui/icons-material/Home";
 import DiscoverIcon from "@mui/icons-material/WifiFind";
@@ -90,7 +90,9 @@ const MenuItemsContainer = styled.div`
     display: block;
   }
 `;
-const Menu = ({ darkMode, setDarkMode }) => {
+const Menu = ({ darkMode, setDarkMode, handleSearchMenu }) => {
+  const location = useLocation();
+
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleMenuClick = () => {
@@ -117,31 +119,47 @@ const Menu = ({ darkMode, setDarkMode }) => {
               Home
             </Item>
           </Link>
-          <Item>
+          {/* <Item>
             <DiscoverIcon />
             Discover
-          </Item>
-          <Item>
-            <LibraryIcon />
-            My Library
-          </Item>
+          </Item> */}
+          <Link
+            to="/mylibrary"
+            style={{ textDecoration: "none", color: "inherit" }}>
+            <Item>
+              <LibraryIcon />
+              My Library
+            </Item>
+          </Link>
           <Hr />
-          <Item>
-            <SearchIcon />
-            Search
-          </Item>
-          <Item>
-            <CategoryIcon />
-            Categories
-          </Item>
-          <Item>
+          {location.pathname === "/" ? (
+            <Item onClick={handleSearchMenu}>
+              <SearchIcon />
+              Search
+            </Item>
+          ) : (
+            <></>
+          )}
+          <Link
+            to="/categories"
+            style={{ textDecoration: "none", color: "inherit" }}>
+            <Item>
+              <CategoryIcon />
+              Categories
+            </Item>
+          </Link>
+          {/* <Item>
             <DownloadIcon />
             Downloads
-          </Item>
-          <Item>
-            <RecentIcon />
-            Recently Played
-          </Item>
+          </Item> */}
+          <Link
+            to="/savedpodcast"
+            style={{ textDecoration: "none", color: "inherit" }}>
+            <Item>
+              <RecentIcon />
+              Saved Podcast
+            </Item>
+          </Link>
           <Item>
             <SubscriptionsIcon />
             Subscriptions
@@ -151,14 +169,14 @@ const Menu = ({ darkMode, setDarkMode }) => {
             <DarkModeIcon />
             {darkMode ? "Light" : "Dark"} Theme
           </Item>
-          <Item>
+          {/* <Item>
             <SettingsIcon />
             Settings
-          </Item>
-          <Item>
+          </Item> */}
+          {/* <Item>
             <HelpIcon />
             Help
-          </Item>
+          </Item> */}
         </MenuItemsContainer>
       </Wrapper>
     </Container>

@@ -3,6 +3,8 @@ import { useState } from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Container = styled.div`
   display: flex;
@@ -44,6 +46,7 @@ const Input = styled.input`
   border: 1px solid ${({ theme }) => theme.hr};
   border-radius: 3px;
   padding: 10px;
+  margin: "0 10px";
   background-color: transparent;
   color: ${({ theme }) => theme.text};
   width: 100%;
@@ -58,10 +61,29 @@ const Button = styled.button`
   background-color: ${({ theme }) => theme.navbar};
   color: ${({ theme }) => theme.text};
 `;
+const Select = styled.select`
+  border: 1px solid ${({ theme }) => theme.hr};
+  border-radius: 3px;
+  padding: 10px;
+  background-color: transparent;
+  color: ${({ theme }) => theme.text};
+  width: 111%;
+  box-sizing: border-box; /* Add this line to include padding and border in the width calculation */
+`;
 
+const Option = styled.option`
+  color: black;
+`;
 const SignUp = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState({ name: "", email: "", password: "" });
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    gender: "",
+    dob: "",
+  });
 
   const handleInputs = (e) => {
     console.log(e);
@@ -71,19 +93,32 @@ const SignUp = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      const { name, email, password } = user;
-      const response = await axios.post("http://localhost:8000/signup", {
-        name,
-        email,
-        password,
-      });
-      if (response.status === 201) {
-        window.alert("Registration Successful");
-        localStorage.setItem("user", JSON.stringify(response));
-        console.log("Successful Registration");
-      } else {
-        window.alert("Invalid Registration");
-        console.log("Invalid Registration");
+      const { name, email, password, confirmPassword, gender, dob } = user;
+      if (password !== confirmPassword) {
+        toast.error("Password do not match !!!", {
+          position: toast.POSITION.BOTTOM_LEFT,
+        });
+        return;
+      } else if (password === confirmPassword) {
+        const response = await axios.post("http://localhost:8000/signup", {
+          name,
+          email,
+          password,
+          gender,
+          dob,
+        });
+        if (response.status === 201) {
+          toast.success("Successful Registration.", {
+            position: toast.POSITION.BOTTOM_LEFT,
+          });
+          localStorage.setItem("user", JSON.stringify(response));
+          console.log("Successful Registration");
+        } else {
+          toast.error("Invalid Registration", {
+            position: toast.POSITION.BOTTOM_LEFT,
+          });
+          console.log("Invalid Registration");
+        }
       }
     } catch (err) {
       // Handle error response
@@ -124,6 +159,27 @@ const SignUp = () => {
           value={user.password}
           onChange={handleInputs}
         />
+        <Input
+          type="password"
+          placeholder="Confirm Password"
+          name="confirmPassword"
+          value={user.confirmPassword}
+          onChange={handleInputs}
+        />
+        <Select name="gender" value={user.gender} onChange={handleInputs}>
+          <Option value="">Select Gender</Option>
+          <Option value="male">Male</Option>
+          <Option value="female">Female</Option>
+          <Option value="other">Other</Option>
+        </Select>
+        <Input
+          type="date"
+          placeholder="Date of Birth"
+          name="dob"
+          value={user.dob}
+          onChange={handleInputs}
+        />
+
         <Button className="signup-button" onClick={handleSignup}>
           Sign Up
         </Button>
@@ -132,6 +188,7 @@ const SignUp = () => {
         <Link to="/signin" style={{ textDecoration: "none" }}>
           <Button>Sign In</Button>
         </Link>
+        <ToastContainer />
       </Wrapper>
     </Container>
   );
