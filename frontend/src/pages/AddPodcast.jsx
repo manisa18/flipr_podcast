@@ -11,6 +11,11 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import styled from "styled-components";
 import axios from "axios";
@@ -31,6 +36,7 @@ const AddPodcast = () => {
     type: "video",
     description: "",
   });
+  const [uploading, setUploading] = useState(false);
 
   const handleThumbnailChange = (e) => {
     const selectedThumbnail = e.target.files[0];
@@ -49,6 +55,7 @@ const AddPodcast = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setUploading(true);
       const auth = localStorage.getItem("user");
       const userId = JSON.parse(auth).data.user._id;
 
@@ -86,6 +93,7 @@ const AddPodcast = () => {
         }
       );
       console.log(response);
+      setUploading(false);
       navigate("/mylibrary");
     } catch (err) {
       // Handle error response
@@ -96,10 +104,19 @@ const AddPodcast = () => {
       } else {
         console.log(err.message);
       }
+      setUploading(false);
     }
   };
   return (
     <Container>
+      <Dialog open={uploading} onClose={() => {}}>
+        <DialogTitle>Uploading...</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Please wait while the file is being uploaded.
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
       <Box
         sx={{
           display: "flex",

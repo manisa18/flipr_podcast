@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Container } from "@mui/material";
+import { Container, Box } from "@mui/material";
 import Card from "../components/Card";
+import styled from "styled-components";
+
+const Title = styled.h1`
+  color: ${({ theme }) => theme.text};
+`;
 const SavedPodcast = () => {
   const [podcast, setPodcast] = useState([]);
 
@@ -40,6 +45,18 @@ const SavedPodcast = () => {
 
   return (
     <Container>
+      <Box
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}>
+        <Box>
+          <Title>Saved Podcast</Title>
+        </Box>
+      </Box>
+      <hr />
+
       {podcast.length > 0 ? (
         podcast.map((product) => (
           <div key={product.id}>
