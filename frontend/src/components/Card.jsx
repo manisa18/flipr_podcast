@@ -87,8 +87,8 @@ const Card = ({ type, product }) => {
           <Avatar
             sx={{
               bgcolor: "#ffff",
-              width: 30,
-              height: 30,
+              width: 45,
+              height: 45,
             }}>
             <Typography
               variant="subtitle1"

@@ -11,7 +11,7 @@ const Title = styled.h1`
 
 const Hr = styled.hr`
   margin: 15px 0px;
-  border: 0.5px solid ${({ theme }) => theme.hr};
+  border: 5px solid ${({ theme }) => theme.hr};
 `;
 
 const SavedPodcast = () => {
