@@ -19,6 +19,7 @@ import UpdatePodcast from "./pages/UpdatePodcast";
 
 const Container = styled.div`
   display: flex;
+  min-height: calc(100vh);
 `;
 const Main = styled.div`
   flex: 7;
