@@ -3,6 +3,8 @@ import { useState } from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Container = styled.div`
   display: flex;
@@ -93,7 +95,9 @@ const SignUp = () => {
     try {
       const { name, email, password, confirmPassword, gender, dob } = user;
       if (password !== confirmPassword) {
-        window.alert("Passwords do not match");
+        toast.error("Password do not match !!!", {
+          position: toast.POSITION.BOTTOM_LEFT,
+        });
         return;
       } else if (password === confirmPassword) {
         const response = await axios.post("http://localhost:8000/signup", {
@@ -104,11 +108,15 @@ const SignUp = () => {
           dob,
         });
         if (response.status === 201) {
-          window.alert("Registration Successful");
+          toast.success("Successful Registration.", {
+            position: toast.POSITION.BOTTOM_LEFT,
+          });
           localStorage.setItem("user", JSON.stringify(response));
           console.log("Successful Registration");
         } else {
-          window.alert("Invalid Registration");
+          toast.error("Invalid Registration", {
+            position: toast.POSITION.BOTTOM_LEFT,
+          });
           console.log("Invalid Registration");
         }
       }
@@ -180,6 +188,7 @@ const SignUp = () => {
         <Link to="/signin" style={{ textDecoration: "none" }}>
           <Button>Sign In</Button>
         </Link>
+        <ToastContainer />
       </Wrapper>
     </Container>
   );

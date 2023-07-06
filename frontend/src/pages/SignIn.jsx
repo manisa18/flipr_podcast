@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Container = styled.div`
   display: flex;
@@ -74,14 +76,17 @@ const SignIn = () => {
         password,
       });
       if (response.status === 200) {
-        // Handle successful signin
-        window.alert("Signin Successful");
+        toast.success("Successful Signin.", {
+          position: toast.POSITION.BOTTOM_LEFT,
+        });
         localStorage.setItem("user", JSON.stringify(response));
         console.log("Successful Signin");
         navigate("/");
       } else {
         // Handle unsuccessful signin
-        window.alert("Invalid Credentials");
+        toast.error("Invalid Credentials", {
+          position: toast.POSITION.BOTTOM_LEFT,
+        });
         console.log("Invalid Credentials");
       }
     } catch (err) {
@@ -116,6 +121,7 @@ const SignIn = () => {
         <Link to="/signup" style={{ textDecoration: "none" }}>
           <Button>Create an Account</Button>
         </Link>
+        <ToastContainer />
       </Wrapper>
     </Container>
   );

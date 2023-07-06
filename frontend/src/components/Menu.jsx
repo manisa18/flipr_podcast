@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import ListenUpLogo from "../img/logo.png";
 import HomeIcon from "@mui/icons-material/Home";
 import DiscoverIcon from "@mui/icons-material/WifiFind";
@@ -91,6 +91,8 @@ const MenuItemsContainer = styled.div`
   }
 `;
 const Menu = ({ darkMode, setDarkMode, handleSearchMenu }) => {
+  const location = useLocation();
+
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleMenuClick = () => {
@@ -130,11 +132,17 @@ const Menu = ({ darkMode, setDarkMode, handleSearchMenu }) => {
             </Item>
           </Link>
           <Hr />
-          <Item onClick={handleSearchMenu}>
-            <SearchIcon />
-            Search
-          </Item>
-          <Link to="/categories" style={{ textDecoration: "none", color: "inherit" }}>
+          {location.pathname === "/" ? (
+            <Item onClick={handleSearchMenu}>
+              <SearchIcon />
+              Search
+            </Item>
+          ) : (
+            <></>
+          )}
+          <Link
+            to="/categories"
+            style={{ textDecoration: "none", color: "inherit" }}>
             <Item>
               <CategoryIcon />
               Categories

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import SearchIcon from "@mui/icons-material/Search";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 const Container = styled.div`
   position: sticky;
@@ -73,6 +73,7 @@ const Dropdown = styled.div`
 `;
 
 const Navbar = ({ setSearchResult, isSearchBarOpen, setIsSearchBarOpen }) => {
+  const location = useLocation();
   const navigate = useNavigate();
   const auth = localStorage.getItem("user");
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -115,20 +116,24 @@ const Navbar = ({ setSearchResult, isSearchBarOpen, setIsSearchBarOpen }) => {
   return (
     <Container>
       <Wrapper>
-        <Search>
-          <Input
-            ref={inputRef}
-            placeholder="Search"
-            value={keywords}
-            onChange={(e) => setKeywords(e.target.value)}
-          />
+        {location.pathname === "/" ? (
+          <Search>
+            <Input
+              ref={inputRef}
+              placeholder="Search"
+              value={keywords}
+              onChange={(e) => setKeywords(e.target.value)}
+            />
 
-          <Button
-            onClick={handleSearchClick || isSearchBarOpen}
-            style={{ backgroundColor: "transparent", border: "none" }}>
-            <SearchIcon />
-          </Button>
-        </Search>
+            <Button
+              onClick={handleSearchClick || isSearchBarOpen}
+              style={{ backgroundColor: "transparent", border: "none" }}>
+              <SearchIcon />
+            </Button>
+          </Search>
+        ) : (
+          <div></div>
+        )}
         {auth ? (
           <div>
             <Avatar
