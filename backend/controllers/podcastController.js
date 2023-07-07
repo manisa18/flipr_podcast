@@ -3,13 +3,15 @@ const User = require("../models/userModel");
 const ErrorHander = require("../utils/errorhandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ApiFeatures = require("../utils/apifeatures");
+const dotenv = require("dotenv");
 
 const admin = require("firebase-admin");
 const serviceAccount = require("../config/serviceAccount.json");
 
+dotenv.config({ path: "../config/config.env" });
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  storageBucket: "podcast-f4c97.appspot.com",
+  storageBucket: process.env.STORAGE_BUCKET,
 });
 
 exports.createPodcast = catchAsyncErrors(async (req, res, next) => {
