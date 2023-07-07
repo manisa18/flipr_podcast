@@ -10,8 +10,8 @@ const Title = styled.h1`
 `;
 
 const Hr = styled.hr`
-  margin: 15px 0px;
-  border: 0.5px solid ${({ theme }) => theme.hr};
+  margin: 10px 0px 20px 0px;
+  border: 1px solid ${({ theme }) => theme.hr};
 `;
 
 const SavedPodcast = () => {
@@ -83,7 +83,7 @@ const SavedPodcast = () => {
           </Link>
         </Box>
       </Box>
-      <hr />
+      <Hr />
       {podcast.length > 0 ? (
         podcast.map((product) => (
           <div key={product.id}>

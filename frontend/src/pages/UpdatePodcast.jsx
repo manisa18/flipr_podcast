@@ -15,7 +15,10 @@ import axios from "axios";
 const Title = styled.h1`
   color: ${({ theme }) => theme.text};
 `;
-
+const Hr = styled.hr`
+  margin: 10px 0px 20px 0px;
+  border: 1px solid ${({ theme }) => theme.hr};
+`;
 const UpdatePodcast = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -107,7 +110,7 @@ const UpdatePodcast = () => {
           {/* </Link> */}
         </Box>
       </Box>
-      <hr />
+      <Hr />
 
       <TextField
         fullWidth

@@ -68,7 +68,7 @@ const Dropdown = styled.div`
   padding: 5px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
   z-index: 1;
 `;
 
@@ -128,7 +128,8 @@ const Navbar = ({ setSearchResult, isSearchBarOpen, setIsSearchBarOpen }) => {
             <Button
               onClick={handleSearchClick || isSearchBarOpen}
               style={{ backgroundColor: "transparent", border: "none" }}>
-              <SearchIcon />
+              <SearchIcon/>
+
             </Button>
           </Search>
         ) : (
@@ -139,8 +140,8 @@ const Navbar = ({ setSearchResult, isSearchBarOpen, setIsSearchBarOpen }) => {
             <Avatar
               sx={{
                 bgcolor: "#ffff",
-                width: 30,
-                height: 30,
+                width: 40,
+                height: 40,
                 cursor: "pointer",
               }}
               onClick={handleDropdown}>
