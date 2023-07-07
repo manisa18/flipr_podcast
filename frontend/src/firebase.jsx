@@ -1,15 +1,18 @@
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
+// import env from "react-dotenv";
+
 
 const firebaseConfig = {
-  apiKey: "AIzaSyACbmQJf5VdeOp66pP7NXIR4tUiXxNHjyQ",
-  authDomain: "podcast-f4c97.firebaseapp.com",
-  projectId: "podcast-f4c97",
-  storageBucket: "podcast-f4c97.appspot.com",
-  messagingSenderId: "602876704726",
-  appId: "1:602876704726:web:6966dc61535ec189849677",
-  measurementId: "G-08JN2FN4CD",
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID,
+  measurementId: process.env.REACT_APP_MEASUREMENT_ID,
 };
+console.log(firebaseConfig);
 
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
