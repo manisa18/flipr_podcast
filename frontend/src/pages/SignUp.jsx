@@ -24,7 +24,11 @@ const Wrapper = styled.div`
   padding: 20px 50px;
   gap: 10px;
 `;
-
+const InputWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+  width: 109%;
+`;
 const Title = styled.h1`
   font-size: 23px;
   margin: 0px;
@@ -166,19 +170,21 @@ const SignUp = () => {
           value={user.confirmPassword}
           onChange={handleInputs}
         />
-        <Select name="gender" value={user.gender} onChange={handleInputs}>
-          <Option value="">Select Gender</Option>
-          <Option value="male">Male</Option>
-          <Option value="female">Female</Option>
-          <Option value="other">Other</Option>
-        </Select>
-        <Input
-          type="date"
-          placeholder="Date of Birth"
-          name="dob"
-          value={user.dob}
-          onChange={handleInputs}
-        />
+        <InputWrapper>
+          <Select name="gender" value={user.gender} onChange={handleInputs}>
+            <Option value="">Select Gender</Option>
+            <Option value="male">Male</Option>
+            <Option value="female">Female</Option>
+            <Option value="other">Other</Option>
+          </Select>
+          <Input
+            type="date"
+            placeholder="Date of Birth"
+            name="dob"
+            value={user.dob}
+            onChange={handleInputs}
+          />
+        </InputWrapper>
 
         <Button className="signup-button" onClick={handleSignup}>
           Sign Up

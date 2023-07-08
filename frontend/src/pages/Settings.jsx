@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { Grid, TextField, Button } from "@mui/material";
+import { Box, Grid, TextField, Button } from "@mui/material";
 
 const Container = styled.div`
   display: flex;
@@ -256,48 +256,6 @@ const Settings = () => {
             )}
           </Grid>
         </Grid>
-        {/* <Grid container spacing={2} alignItems="center">
-          <Grid item xs={8}>
-            <TextField
-              sx={textFieldStyle}
-              fullWidth
-              label="Password"
-              type="password"
-              value={editedPassword}
-              disabled={!isEditMode.password}
-              onChange={(e) => setEditedPassword(e.target.value)}
-            />
-          </Grid> */}
-        {/* <Grid item xs={2}>
-            {isEditMode.password ? (
-              <Button
-                sx={{ ...BtnSave }}
-                variant="contained"
-                onClick={() => handleSaveClick("password")}
-              >
-                Save
-              </Button>
-            ) : (
-              <Button
-                sx={{ ...Btn }}
-                variant="contained"
-                onClick={() => handleEditClick("password")}
-              >
-                Edit
-              </Button>
-            )}
-          </Grid>
-          <Grid item xs={2}>
-            {isEditMode.password && (
-              <Button
-                sx={{ ...BtnCancel }}
-                onClick={() => handleCancelClick("password")}
-              >
-                Cancel
-              </Button>
-            )}
-          </Grid> */}
-        {/* </Grid> */}
       </Wrapper>
     </Container>
   );
